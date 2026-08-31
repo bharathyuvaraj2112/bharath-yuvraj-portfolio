@@ -2,6 +2,8 @@
 
 A modern personal portfolio built with Next.js, React, TypeScript and Tailwind CSS for an AI & Machine Learning student and full-stack developer.
 
+<!-- GitHub -> Vercel Auto-Deployment Active -->
+
 ## Features
 
 * **Responsive Design**: Mobile-first responsive layout optimized for all viewport sizes (320px to 1440px+).
