@@ -10,6 +10,12 @@ export interface ProfileData {
   email: string;
   resumePath: string;
   profilePhotoUrl: string;
+  tagline?: string;
+  bio?: string;
+  availabilityStatus?: string;
+  githubUrl?: string;
+  linkedinUrl?: string;
+  resumeUrl?: string;
   socials: {
     github: string;
     linkedin: string;
@@ -31,6 +37,12 @@ export const profileData: ProfileData = {
   email: "bharathyuvraj.dev@example.com",
   resumePath: "/resume-placeholder.pdf",
   profilePhotoUrl: "/profile.jpg",
+  tagline: "AI & Machine Learning Student | Full Stack Developer",
+  bio: "Passionate AI/ML student dedicated to building modern, intelligent digital experiences. Combining machine learning algorithms with full-stack web development to solve real-world problems.",
+  availabilityStatus: "Open to learning • Building • Creating",
+  githubUrl: "https://github.com/bharathyuvaraj2112/bharath-yuvraj-portfolio",
+  linkedinUrl: "https://linkedin.com/in/bharathyuvraj-placeholder",
+  resumeUrl: "/resume-placeholder.pdf",
   shortBio:
     "Passionate AI/ML student dedicated to building modern, intelligent digital experiences. Combining machine learning algorithms with full-stack web development to solve real-world problems.",
   aboutIntro:
@@ -40,7 +52,7 @@ export const profileData: ProfileData = {
   aboutPhilosophy:
     "I believe in continuous learning, writing clean maintainable code, and crafting software that provides genuine value to real users through thoughtful UI/UX and intelligent engineering.",
   socials: {
-    github: "https://github.com/bharathyuvraj-placeholder",
+    github: "https://github.com/bharathyuvaraj2112/bharath-yuvraj-portfolio",
     linkedin: "https://linkedin.com/in/bharathyuvraj-placeholder",
     email: "mailto:bharathyuvraj.dev@example.com",
   },

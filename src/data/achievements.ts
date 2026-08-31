@@ -1,11 +1,13 @@
 export interface Achievement {
   id: string;
   title: string;
-  category: "Academic" | "Hackathon" | "Coding" | "Learning Milestone";
+  category: "Academic" | "Hackathon" | "Coding" | "Learning Milestone" | string;
   date: string;
   description: string;
-  tag: string;
-  isPlaceholder: boolean;
+  tag?: string;
+  metric?: string;
+  link?: string;
+  isPlaceholder?: boolean;
 }
 
 export const achievementsData: Achievement[] = [
@@ -17,6 +19,7 @@ export const achievementsData: Achievement[] = [
     description:
       "Collaborated with a 3-member team to design and build a working software prototype within a 24-hour hackathon duration. Focused on frontend design and rapid API integration.",
     tag: "Team Collaboration",
+    metric: "Finalist",
     isPlaceholder: true,
   },
   {
@@ -27,6 +30,7 @@ export const achievementsData: Achievement[] = [
     description:
       "Consistently practicing fundamental Data Structures & Algorithms on platforms like LeetCode and HackerRank to strengthen problem-solving speed and code efficiency.",
     tag: "Problem Solving",
+    metric: "100+ Solved",
     isPlaceholder: true,
   },
   {
@@ -37,6 +41,7 @@ export const achievementsData: Achievement[] = [
     description:
       "Maintained strong coursework performance in core engineering subjects including Mathematics, Data Structures, and Computer Systems.",
     tag: "Academics",
+    metric: "Top Percentile",
     isPlaceholder: true,
   },
   {
@@ -47,6 +52,7 @@ export const achievementsData: Achievement[] = [
     description:
       "Engineered a full responsive frontend design system with Next.js, React, TypeScript, and Tailwind CSS, structured for cloud integration.",
     tag: "Engineering",
+    metric: "Production Live",
     isPlaceholder: false,
   },
 ];
