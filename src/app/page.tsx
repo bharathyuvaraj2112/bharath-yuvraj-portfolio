@@ -9,10 +9,11 @@ import { Achievements } from "@/components/achievements/Achievements";
 import { ResumeCTA } from "@/components/resume/ResumeCTA";
 import { Contact } from "@/components/contact/Contact";
 import { Footer } from "@/components/footer/Footer";
+import { AIChatWidget } from "@/components/ai/AIChatWidget";
 
 export default function Home() {
   return (
-    <div className="relative min-h-screen selection:bg-cyan-500 selection:text-white">
+    <div className="relative min-h-screen selection:bg-white selection:text-black">
       <Navbar />
       <main>
         <Hero />
@@ -26,6 +27,7 @@ export default function Home() {
         <Contact />
       </main>
       <Footer />
+      <AIChatWidget />
     </div>
   );
 }
