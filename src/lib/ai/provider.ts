@@ -10,11 +10,11 @@ export async function generateAIResponse(
   contextData: string
 ): Promise<string> {
   const provider = (process.env.AI_PROVIDER || "gemini").toLowerCase();
-  const apiKey = process.env.AI_API_KEY || process.env.GEMINI_API_KEY || process.env.OPENAI_API_KEY;
+  const apiKey = (process.env.AI_API_KEY || process.env.GEMINI_API_KEY || process.env.OPENAI_API_KEY || "").trim();
 
   const fullSystemPrompt = `${SYSTEM_PROMPT_TEMPLATE}\n${contextData}`;
 
-  // If no live API key is configured yet on server, return intelligent contextual fallback
+  // If no live API key is set yet, return smart context fallback
   if (!apiKey) {
     return generateFallbackResponse(messages, contextData);
   }
@@ -26,8 +26,8 @@ export async function generateAIResponse(
       return await callGeminiAPI(apiKey, fullSystemPrompt, messages);
     }
   } catch (err: any) {
-    console.error("AI Provider execution error:", err);
-    return "Sorry, the AI assistant is temporarily unavailable. Please feel free to explore Bharath's portfolio sections or reach out directly using the contact form below!";
+    console.warn("AI Provider call failed, serving smart fallback response:", err.message);
+    return generateFallbackResponse(messages, contextData);
   }
 }
 
@@ -39,7 +39,6 @@ async function callGeminiAPI(
   const model = process.env.AI_MODEL || "gemini-1.5-flash";
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
-  // Convert ChatHistory to Gemini Contents structure
   const contents = [
     {
       role: "user",
@@ -113,26 +112,34 @@ async function callOpenAIAPI(
 }
 
 /**
- * Intelligent local fallback when AI API key is not yet set in server environment
+ * Smart contextual fallback engine when API key is unconfigured or offline
  */
 function generateFallbackResponse(messages: ChatMessage[], context: string): string {
   const lastMsg = messages[messages.length - 1]?.content.toLowerCase() || "";
 
-  if (lastMsg.includes("project") || lastMsg.includes("accident") || lastMsg.includes("resume") || lastMsg.includes("assistant")) {
-    return "Bharath has built 4 key projects:\n1. **Accident Detect Alert** (AI / ML)\n2. **AI Study Assistant** (AI / ML)\n3. **AI Resume Analyzer** (Full Stack & AI)\n4. **Developer Portfolio** (Next.js & Tailwind CSS)\n\nYou can explore detailed overviews of each project in the **Projects** section!";
+  if (lastMsg.includes("accident") || lastMsg.includes("detect")) {
+    return "The **Accident Detect Alert** project is an AI & IoT safety system designed to automatically detect vehicle collisions and alert emergency services with location data in real time.";
   }
 
-  if (lastMsg.includes("skill") || lastMsg.includes("technology") || lastMsg.includes("python") || lastMsg.includes("react") || lastMsg.includes("know")) {
-    return "Bharath specializes in **Artificial Intelligence & Machine Learning** alongside **Full Stack Web Development**.\n\nKey skills include: **Python, Next.js, React, TypeScript, Tailwind CSS, Data Structures & Algorithms, and Machine Learning Fundamentals**.";
+  if (lastMsg.includes("project") || lastMsg.includes("built") || lastMsg.includes("work")) {
+    return "Bharath has engineered 4 major featured projects:\n1. **Accident Detect Alert** (AI / ML & IoT Safety System)\n2. **AI Study Assistant** (AI / ML Learning Tool)\n3. **AI Resume Analyzer** (Full Stack ATS Feedback Tool)\n4. **Developer Portfolio** (Next.js & Tailwind CSS)\n\nYou can view full overviews and live demos in the **Projects** section!";
   }
 
-  if (lastMsg.includes("education") || lastMsg.includes("college") || lastMsg.includes("degree") || lastMsg.includes("btech") || lastMsg.includes("school") || lastMsg.includes("12th") || lastMsg.includes("10th")) {
-    return "Bharath's Academic Timeline:\n- **B.Tech in Artificial Intelligence & Machine Learning** (2023 - 2027)\n- **Intermediate / Class XII (MPC Stream)** (2021 - 2023)\n- **Secondary School Certificate / Class X** (2020 - 2021)";
+  if (lastMsg.includes("skill") || lastMsg.includes("technology") || lastMsg.includes("python") || lastMsg.includes("react") || lastMsg.includes("stack")) {
+    return "Bharath specializes in **Artificial Intelligence & Machine Learning** and **Full Stack Engineering**.\n\nHis technical stack includes: **Python, Next.js, React, TypeScript, Tailwind CSS, Data Structures & Algorithms, and Machine Learning Fundamentals**.";
+  }
+
+  if (lastMsg.includes("education") || lastMsg.includes("college") || lastMsg.includes("btech") || lastMsg.includes("degree") || lastMsg.includes("school") || lastMsg.includes("12th") || lastMsg.includes("10th")) {
+    return "Bharath's Academic Education Timeline:\n- **B.Tech in Artificial Intelligence & Machine Learning** (2023 - 2027)\n- **Intermediate / Class XII (MPC Stream)** (2021 - 2023)\n- **Secondary School Certificate / Class X** (2020 - 2021)";
+  }
+
+  if (lastMsg.includes("certif") || lastMsg.includes("credential")) {
+    return "Bharath holds credentials in **Python for Data Science & ML**, **Full Stack Web Development**, and **Data Structures & Algorithmic Problem Solving**.";
   }
 
   if (lastMsg.includes("contact") || lastMsg.includes("email") || lastMsg.includes("hire") || lastMsg.includes("reach")) {
-    return "You can contact Bharath directly through the **Contact** section at the bottom of the page, or by emailing him at **bharathyuvraj.dev@example.com**!";
+    return "You can reach Bharath directly via the **Contact** section at the bottom of this page or email him at **bharathyuvraj.dev@example.com**!";
   }
 
-  return "Hi! I am Bharath's AI Portfolio Assistant. I can answer questions about his AI/ML projects, skills, B.Tech education, certifications, and achievements. What would you like to know?";
+  return "I am Bharath's AI Portfolio Assistant! You can ask me about his AI/ML projects (like Accident Detect Alert), technical skills, education timeline, or how to contact him.";
 }
