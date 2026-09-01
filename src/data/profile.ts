@@ -36,7 +36,7 @@ export const profileData: ProfileData = {
   location: "India",
   email: "bharathyuvraj.dev@example.com",
   resumePath: "/resume-placeholder.pdf",
-  profilePhotoUrl: "/profile.jpg",
+  profilePhotoUrl: "/profile.jpeg",
   tagline: "AI & Machine Learning Student | Full Stack Developer",
   bio: "Passionate AI/ML student dedicated to building modern, intelligent digital experiences. Combining machine learning algorithms with full-stack web development to solve real-world problems.",
   availabilityStatus: "Open to learning • Building • Creating",

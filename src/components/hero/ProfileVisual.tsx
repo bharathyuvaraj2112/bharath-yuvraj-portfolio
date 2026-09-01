@@ -29,7 +29,7 @@ export function ProfileVisual() {
         {/* Inner Profile Image Frame */}
         <div className="relative w-full h-full rounded-2xl overflow-hidden border border-zinc-800 bg-zinc-950 flex items-center justify-center">
           <Image
-            src={profile.profilePhotoUrl || "/profile.jpg"}
+            src={profile.profilePhotoUrl || "/profile.jpeg"}
             alt={profile.name}
             fill
             sizes="(max-width: 768px) 100vw, 400px"
