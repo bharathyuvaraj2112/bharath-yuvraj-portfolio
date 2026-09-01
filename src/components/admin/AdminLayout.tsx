@@ -80,10 +80,9 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
             <Link href="/admin/dashboard" className="flex items-center gap-3 group">
               <div className="relative w-10 h-10 rounded-xl overflow-hidden border border-zinc-700 shadow-md shrink-0 group-hover:border-zinc-500 transition-colors">
                 <Image
-                  src="/profile.jpg?v=2"
+                  src="/profile.jpg"
                   alt="Admin Profile Avatar"
                   fill
-                  unoptimized
                   className="object-cover object-center"
                 />
               </div>
@@ -157,10 +156,9 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
         <Link href="/admin/dashboard" className="flex items-center gap-2.5">
           <div className="relative w-8 h-8 rounded-lg overflow-hidden border border-zinc-700 shrink-0">
             <Image
-              src="/profile.jpg?v=2"
+              src="/profile.jpg"
               alt="Admin Profile"
               fill
-              unoptimized
               className="object-cover object-center"
             />
           </div>

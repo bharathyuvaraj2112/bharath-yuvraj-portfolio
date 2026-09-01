@@ -9,26 +9,70 @@ export async function generateAIResponse(
   messages: ChatMessage[],
   contextData: string
 ): Promise<string> {
-  const provider = (process.env.AI_PROVIDER || "gemini").toLowerCase();
-  const apiKey = (process.env.AI_API_KEY || process.env.GEMINI_API_KEY || process.env.OPENAI_API_KEY || "").trim();
+  const provider = (process.env.AI_PROVIDER || "groq").toLowerCase();
+  const apiKey = (
+    process.env.GROQ_API_KEY ||
+    process.env.AI_API_KEY ||
+    process.env.GEMINI_API_KEY ||
+    process.env.OPENAI_API_KEY ||
+    ""
+  ).trim();
 
   const fullSystemPrompt = `${SYSTEM_PROMPT_TEMPLATE}\n${contextData}`;
 
-  // If no live API key is set yet, return smart context fallback
   if (!apiKey) {
     return generateFallbackResponse(messages, contextData);
   }
 
   try {
-    if (provider === "openai") {
+    if (provider === "groq") {
+      return await callGroqAPI(apiKey, fullSystemPrompt, messages);
+    } else if (provider === "openai") {
       return await callOpenAIAPI(apiKey, fullSystemPrompt, messages);
     } else {
       return await callGeminiAPI(apiKey, fullSystemPrompt, messages);
     }
-  } catch (err: any) {
-    console.warn("AI Provider call failed, serving smart fallback response:", err.message);
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.warn("AI Provider call failed, serving smart fallback response:", msg);
     return generateFallbackResponse(messages, contextData);
   }
+}
+
+async function callGroqAPI(
+  apiKey: string,
+  systemInstruction: string,
+  messages: ChatMessage[]
+): Promise<string> {
+  const model = process.env.AI_MODEL || "openai/gpt-oss-120b";
+  const url = "https://api.groq.com/openai/v1/chat/completions";
+
+  const apiMessages = [
+    { role: "system", content: systemInstruction },
+    ...messages.map((m) => ({ role: m.role, content: m.content })),
+  ];
+
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model,
+      messages: apiMessages,
+      max_tokens: 800,
+      temperature: 0.4,
+    }),
+  });
+
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(`Groq API Error ${res.status}: ${errText}`);
+  }
+
+  const data = await res.json();
+  return data?.choices?.[0]?.message?.content || "No response generated.";
 }
 
 async function callGeminiAPI(
@@ -46,7 +90,11 @@ async function callGeminiAPI(
     },
     {
       role: "model",
-      parts: [{ text: "Understood. I am Bharath Yuvraj's AI Portfolio Assistant and will answer questions strictly based on his portfolio context." }],
+      parts: [
+        {
+          text: "Understood. I am Bharath Yuvraj's AI Portfolio Assistant and will answer questions strictly based on his public portfolio context.",
+        },
+      ],
     },
     ...messages.map((m) => ({
       role: m.role === "user" ? "user" : "model",
@@ -114,8 +162,17 @@ async function callOpenAIAPI(
 /**
  * Smart contextual fallback engine when API key is unconfigured or offline
  */
-function generateFallbackResponse(messages: ChatMessage[], context: string): string {
+function generateFallbackResponse(messages: ChatMessage[], _context: string): string {
   const lastMsg = messages[messages.length - 1]?.content.toLowerCase() || "";
+
+  if (
+    lastMsg.includes("login") ||
+    lastMsg.includes("admin") ||
+    lastMsg.includes("password") ||
+    lastMsg.includes("credential")
+  ) {
+    return "I am Bharath's AI Portfolio Assistant. I am strictly programmed to answer questions about Bharath's public portfolio, projects, skills, education, and certifications. I cannot provide or discuss administrative details or login credentials.";
+  }
 
   if (lastMsg.includes("accident") || lastMsg.includes("detect")) {
     return "The **Accident Detect Alert** project is an AI & IoT safety system designed to automatically detect vehicle collisions and alert emergency services with location data in real time.";
@@ -125,11 +182,23 @@ function generateFallbackResponse(messages: ChatMessage[], context: string): str
     return "Bharath has engineered 4 major featured projects:\n1. **Accident Detect Alert** (AI / ML & IoT Safety System)\n2. **AI Study Assistant** (AI / ML Learning Tool)\n3. **AI Resume Analyzer** (Full Stack ATS Feedback Tool)\n4. **Developer Portfolio** (Next.js & Tailwind CSS)\n\nYou can view full overviews and live demos in the **Projects** section!";
   }
 
-  if (lastMsg.includes("skill") || lastMsg.includes("technology") || lastMsg.includes("python") || lastMsg.includes("react") || lastMsg.includes("stack")) {
+  if (
+    lastMsg.includes("skill") ||
+    lastMsg.includes("technology") ||
+    lastMsg.includes("python") ||
+    lastMsg.includes("react") ||
+    lastMsg.includes("stack")
+  ) {
     return "Bharath specializes in **Artificial Intelligence & Machine Learning** and **Full Stack Engineering**.\n\nHis technical stack includes: **Python, Next.js, React, TypeScript, Tailwind CSS, Data Structures & Algorithms, and Machine Learning Fundamentals**.";
   }
 
-  if (lastMsg.includes("education") || lastMsg.includes("college") || lastMsg.includes("btech") || lastMsg.includes("degree") || lastMsg.includes("school") || lastMsg.includes("12th") || lastMsg.includes("10th")) {
+  if (
+    lastMsg.includes("education") ||
+    lastMsg.includes("college") ||
+    lastMsg.includes("btech") ||
+    lastMsg.includes("degree") ||
+    lastMsg.includes("school")
+  ) {
     return "Bharath's Academic Education Timeline:\n- **B.Tech in Artificial Intelligence & Machine Learning** (2023 - 2027)\n- **Intermediate / Class XII (MPC Stream)** (2021 - 2023)\n- **Secondary School Certificate / Class X** (2020 - 2021)";
   }
 
@@ -137,7 +206,7 @@ function generateFallbackResponse(messages: ChatMessage[], context: string): str
     return "Bharath holds credentials in **Python for Data Science & ML**, **Full Stack Web Development**, and **Data Structures & Algorithmic Problem Solving**.";
   }
 
-  if (lastMsg.includes("contact") || lastMsg.includes("email") || lastMsg.includes("hire") || lastMsg.includes("reach")) {
+  if (lastMsg.includes("contact") || lastMsg.includes("email") || lastMsg.includes("reach")) {
     return "You can reach Bharath directly via the **Contact** section at the bottom of this page or email him at **bharathyuvraj.dev@example.com**!";
   }
 

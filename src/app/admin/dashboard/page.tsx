@@ -73,10 +73,9 @@ export default function AdminDashboardPage() {
           <div className="flex items-center gap-4">
             <div className="relative w-14 h-14 rounded-2xl overflow-hidden border border-zinc-700 shadow-xl shrink-0">
               <Image
-                src="/profile.jpg?v=2"
+                src="/profile.jpg"
                 alt="Bharath Yuvraj Profile Image"
                 fill
-                unoptimized
                 className="object-cover object-center"
               />
             </div>
