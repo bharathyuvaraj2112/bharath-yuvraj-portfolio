@@ -6,7 +6,7 @@ import { getProfileFromFirestore, updateProfileInFirestore } from "@/lib/firebas
 import { ImageUploader } from "@/components/admin/ImageUploader";
 import { ResumeUploader } from "@/components/admin/ResumeUploader";
 import { useToast } from "@/components/ui/Toast";
-import { User, Save, Loader2 } from "lucide-react";
+import { Save, Loader2 } from "lucide-react";
 
 export default function AdminProfilePage() {
   const [loading, setLoading] = useState(true);
@@ -44,7 +44,7 @@ export default function AdminProfilePage() {
             resumeUrl: data.resumeUrl || "",
           });
         }
-      } catch (err) {
+      } catch {
         showToast("Failed to load profile settings", "error");
       } finally {
         setLoading(false);
@@ -58,10 +58,14 @@ export default function AdminProfilePage() {
     setSaving(true);
 
     try {
-      await updateProfileInFirestore(formData);
+      await updateProfileInFirestore({
+        ...formData,
+        resumePath: formData.resumeUrl,
+      });
       showToast("Profile settings saved successfully!", "success");
-    } catch (err: any) {
-      showToast(err.message || "Failed to update profile", "error");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      showToast(msg || "Failed to update profile", "error");
     } finally {
       setSaving(false);
     }

@@ -8,7 +8,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "./config";
-import { SkillCategory } from "@/data/skills";
+import { SkillCategory, skillCategories as defaultSkillCategories } from "@/data/skills";
 
 const SKILLS_COLLECTION = "skills";
 
@@ -22,14 +22,27 @@ export async function getSkillsFromFirestore(): Promise<SkillCategory[]> {
       })) as SkillCategory[];
     }
   } catch (err) {
-    console.warn("Firestore fetch skills failed:", err);
+    console.warn("Firestore fetch skills failed, returning static fallback:", err);
   }
-  return [];
+  return defaultSkillCategories;
 }
 
-export async function createSkillCategoryInFirestore(category: Omit<SkillCategory, "id">): Promise<string> {
+export async function createSkillCategoryInFirestore(category: Omit<SkillCategory, "id"> & { id?: string }): Promise<string> {
+  if (category.id) {
+    const docRef = doc(db, SKILLS_COLLECTION, category.id);
+    await setDoc(docRef, {
+      title: category.title,
+      description: category.description || "",
+      skills: category.skills || [],
+      createdAt: serverTimestamp(),
+    });
+    return category.id;
+  }
+
   const docRef = await addDoc(collection(db, SKILLS_COLLECTION), {
-    ...category,
+    title: category.title,
+    description: category.description || "",
+    skills: category.skills || [],
     createdAt: serverTimestamp(),
   });
   return docRef.id;
@@ -51,3 +64,18 @@ export async function deleteSkillCategoryFromFirestore(id: string): Promise<void
   const docRef = doc(db, SKILLS_COLLECTION, id);
   await deleteDoc(docRef);
 }
+
+export async function seedSkillsToFirestore(): Promise<SkillCategory[]> {
+  const createdCats: SkillCategory[] = [];
+  for (const cat of defaultSkillCategories) {
+    const docId = await createSkillCategoryInFirestore({
+      id: cat.id,
+      title: cat.title,
+      description: cat.description,
+      skills: cat.skills,
+    });
+    createdCats.push({ ...cat, id: docId });
+  }
+  return createdCats;
+}
+
