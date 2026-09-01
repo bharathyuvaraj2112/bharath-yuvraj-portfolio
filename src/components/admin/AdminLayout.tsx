@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { subscribeUnreadCount } from "@/lib/firebase/messages";
+import Image from "next/image";
 import {
   LayoutDashboard,
   FolderGit2,
@@ -19,7 +20,6 @@ import {
   LogOut,
   Menu,
   X,
-  Terminal,
   ExternalLink,
   ChevronRight,
   ShieldCheck,
@@ -40,7 +40,7 @@ const adminNavItems = [
 ];
 
 export function AdminLayout({ children }: { children: React.ReactNode }) {
-  const { user, logout, loading } = useAuth();
+  const { logout, loading } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
@@ -73,13 +73,19 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen bg-black text-zinc-100 flex flex-col lg:flex-row antialiased selection:bg-white selection:text-black">
       
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex w-64 border-r border-zinc-800 bg-zinc-950 flex-col justify-between p-5 flex-shrink-0 h-screen sticky top-0">
+      <aside className="hidden lg:flex w-64 border-r border-zinc-800 bg-zinc-950 flex-col justify-between p-5 shrink-0 h-screen sticky top-0">
         <div>
           {/* Admin Header Brand */}
           <div className="flex items-center justify-between pb-6 mb-6 border-b border-zinc-800">
-            <Link href="/admin/dashboard" className="flex items-center gap-2.5 group">
-              <div className="w-8 h-8 rounded-xl bg-white text-black flex items-center justify-center font-bold shadow-sm group-hover:scale-105 transition-transform">
-                <Terminal className="w-4 h-4" />
+            <Link href="/admin/dashboard" className="flex items-center gap-3 group">
+              <div className="relative w-10 h-10 rounded-xl overflow-hidden border border-zinc-700 shadow-md shrink-0 group-hover:border-zinc-500 transition-colors">
+                <Image
+                  src="/profile.jpg?v=2"
+                  alt="Admin Profile Avatar"
+                  fill
+                  unoptimized
+                  className="object-cover object-center"
+                />
               </div>
               <div>
                 <span className="font-bold text-sm text-white block">Portfolio Admin</span>
@@ -148,9 +154,15 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
 
       {/* Mobile Top Header */}
       <header className="lg:hidden flex items-center justify-between p-4 bg-zinc-950 border-b border-zinc-800 sticky top-0 z-40">
-        <Link href="/admin/dashboard" className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-white text-black flex items-center justify-center font-bold">
-            <Terminal className="w-3.5 h-3.5" />
+        <Link href="/admin/dashboard" className="flex items-center gap-2.5">
+          <div className="relative w-8 h-8 rounded-lg overflow-hidden border border-zinc-700 shrink-0">
+            <Image
+              src="/profile.jpg?v=2"
+              alt="Admin Profile"
+              fill
+              unoptimized
+              className="object-cover object-center"
+            />
           </div>
           <span className="font-bold text-xs text-white">Admin Dashboard</span>
         </Link>
@@ -179,7 +191,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="lg:hidden bg-zinc-950 border-b border-zinc-800 p-4 space-y-2 sticky top-[57px] z-30 shadow-2xl"
+            className="lg:hidden bg-zinc-950 border-b border-zinc-800 p-4 space-y-2 sticky top-14.25 z-30 shadow-2xl"
           >
             {adminNavItems.map((item) => {
               const Icon = item.icon;

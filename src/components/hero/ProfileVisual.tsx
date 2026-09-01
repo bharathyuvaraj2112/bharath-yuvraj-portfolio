@@ -9,6 +9,7 @@ import Image from "next/image";
 
 export function ProfileVisual() {
   const [profile, setProfile] = useState<ProfileData>(defaultProfile);
+  const [version] = useState(() => Date.now());
 
   useEffect(() => {
     async function load() {
@@ -17,6 +18,13 @@ export function ProfileVisual() {
     }
     load();
   }, []);
+
+  const photoSrc =
+    profile.profilePhotoUrl && !profile.profilePhotoUrl.includes("unsplash")
+      ? profile.profilePhotoUrl.includes("?")
+        ? profile.profilePhotoUrl
+        : `${profile.profilePhotoUrl}?v=${version}`
+      : `/profile.jpg?v=${version}`;
 
   return (
     <div className="relative w-full max-w-md mx-auto aspect-square flex items-center justify-center p-4">
@@ -29,9 +37,10 @@ export function ProfileVisual() {
         {/* Inner Profile Image Frame */}
         <div className="relative w-full h-full rounded-2xl overflow-hidden border border-zinc-800 bg-zinc-950 flex items-center justify-center">
           <Image
-            src={profile.profilePhotoUrl || "/profile.jpeg"}
+            src={photoSrc}
             alt={profile.name}
             fill
+            unoptimized
             sizes="(max-width: 768px) 100vw, 400px"
             className="object-cover object-center group-hover:scale-105 transition-transform duration-500 filter brightness-95 contrast-105"
             priority
