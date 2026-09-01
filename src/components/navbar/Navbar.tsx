@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { profileData } from "@/data/profile";
+import { SemanticSearchModal } from "@/components/search/SemanticSearchModal";
+import { ResumeAnalyzerModal } from "@/components/ai/ResumeAnalyzerModal";
 import { Menu, X, FileText, Terminal } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -91,7 +93,7 @@ export function Navbar() {
                     e.preventDefault();
                     handleNavClick(item.href);
                   }}
-                  className={`relative px-3.5 py-1.5 text-xs font-medium rounded-full transition-all duration-200 ${
+                  className={`relative px-3 py-1.5 text-xs font-medium rounded-full transition-all duration-200 ${
                     isActive
                       ? "text-white font-bold"
                       : "text-zinc-400 hover:text-zinc-100"
@@ -110,13 +112,15 @@ export function Navbar() {
             })}
           </nav>
 
-          {/* Desktop Action */}
-          <div className="hidden sm:flex items-center gap-3">
+          {/* Desktop Actions */}
+          <div className="hidden sm:flex items-center gap-2.5">
+            <SemanticSearchModal />
+            <ResumeAnalyzerModal />
             <a
               href={profileData.resumePath}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold rounded-xl bg-white text-black hover:bg-zinc-200 transition-all duration-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-zinc-400"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-full bg-white text-black hover:bg-zinc-200 transition-all duration-200 shadow-sm focus:outline-none"
             >
               <FileText className="w-3.5 h-3.5" />
               <span>Resume</span>
@@ -146,6 +150,11 @@ export function Navbar() {
             className="sm:hidden border-b border-zinc-800 bg-black/95 backdrop-blur-xl px-4 pt-3 pb-6 mt-3"
           >
             <div className="flex flex-col gap-2">
+              <div className="flex flex-wrap gap-2 pb-2 mb-2 border-b border-zinc-800">
+                <SemanticSearchModal />
+                <ResumeAnalyzerModal />
+              </div>
+
               {navItems.map((item) => {
                 const id = item.href.substring(1);
                 const isActive = activeSection === id;

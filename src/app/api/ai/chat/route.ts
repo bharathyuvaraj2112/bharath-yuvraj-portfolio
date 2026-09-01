@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { performSemanticSearch } from "@/lib/ai/vectorStore";
 import { buildPortfolioContext } from "@/lib/ai/context";
 import { generateAIResponse, ChatMessage } from "@/lib/ai/provider";
 
@@ -75,6 +76,22 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // RAG Semantic Retrieval: Search normalized portfolio documents
+    const searchResults = await performSemanticSearch(message, 4, 0.03);
+
+    let ragContext = "";
+    if (searchResults.length > 0) {
+      ragContext = `=== RETRIEVED RELEVANT PORTFOLIO DOCUMENTS (RAG EVIDENCE) ===\n`;
+      searchResults.forEach((res, idx) => {
+        ragContext += `[Evidence #${idx + 1}] (Source: ${res.document.source.toUpperCase()}, Relevancy Score: ${(res.score * 100).toFixed(0)}%)\n`;
+        ragContext += `Title: ${res.document.title}\n`;
+        ragContext += `Content: ${res.document.content}\n\n`;
+      });
+    } else {
+      // If no semantic match meets threshold, fallback to full general portfolio context
+      ragContext = await buildPortfolioContext();
+    }
+
     // Sanitize & format chat history (limit to last 6 messages)
     const validHistory: ChatMessage[] = Array.isArray(history)
       ? history.slice(-6).map((m: any) => ({
@@ -85,17 +102,20 @@ export async function POST(req: NextRequest) {
 
     validHistory.push({ role: "user", content: message.trim() });
 
-    // Build public portfolio context
-    const contextData = await buildPortfolioContext();
+    // Generate AI response using RAG evidence context
+    const aiResponse = await generateAIResponse(validHistory, ragContext);
 
-    // Generate AI completion
-    const aiResponse = await generateAIResponse(validHistory, contextData);
-
-    return NextResponse.json({ response: aiResponse });
+    return NextResponse.json({
+      response: aiResponse,
+      retrievedSourcesCount: searchResults.length,
+    });
   } catch (err: any) {
     console.error("Error in AI Chat API route:", err);
     return NextResponse.json(
-      { response: "Sorry, the AI portfolio assistant is temporarily offline. Please feel free to explore Bharath's portfolio sections or use the direct contact form!" },
+      {
+        response:
+          "Sorry, the AI portfolio assistant is temporarily offline. Please feel free to explore Bharath's portfolio sections or use the direct contact form!",
+      },
       { status: 200 }
     );
   }

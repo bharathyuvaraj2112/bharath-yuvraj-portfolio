@@ -15,6 +15,7 @@ import {
   Mail,
   User as UserIcon,
   Settings,
+  Sparkles,
   LogOut,
   Menu,
   X,
@@ -33,6 +34,7 @@ const adminNavItems = [
   { label: "Achievements", href: "/admin/achievements", icon: Trophy },
   { label: "Education", href: "/admin/education", icon: GraduationCap },
   { label: "Messages", href: "/admin/messages", icon: Mail, hasBadge: true },
+  { label: "AI Studio", href: "/admin/ai", icon: Sparkles },
   { label: "Profile", href: "/admin/profile", icon: UserIcon },
   { label: "Settings", href: "/admin/settings", icon: Settings },
 ];
