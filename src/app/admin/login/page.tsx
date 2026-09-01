@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { sendAdminPasswordReset } from "@/lib/firebase/auth";
 import { useRouter } from "next/navigation";
@@ -20,6 +20,11 @@ export default function AdminLoginPage() {
   const [resending, setResending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [infoMessage, setInfoMessage] = useState<string | null>(null);
+
+  // Clear admin_session cookie on login page load so fresh email/password + OTP is always required
+  useEffect(() => {
+    document.cookie = "admin_session=; path=/; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 GMT;";
+  }, []);
 
   // Step 1: Validate Email & Password, then request 2FA OTP
   const handleCredentialsSubmit = async (e: React.FormEvent) => {

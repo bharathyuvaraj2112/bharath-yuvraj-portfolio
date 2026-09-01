@@ -34,9 +34,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (currentUser) {
         const authorized = await isUserAdmin(currentUser);
         setIsAdmin(authorized);
-        if (authorized) {
-          document.cookie = "admin_session=true; path=/; max-age=86400; SameSite=Lax";
-        } else {
+        if (!authorized) {
           document.cookie = "admin_session=; path=/; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 GMT;";
         }
       } else {
@@ -53,7 +51,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!loading) {
       const isAdminRoute = pathname?.startsWith("/admin") && pathname !== "/admin/login";
-      if (isAdminRoute && (!user || !isAdmin)) {
+      const hasAdminCookie = typeof document !== "undefined" && document.cookie.includes("admin_session=true");
+
+      if (isAdminRoute && (!user || !isAdmin || !hasAdminCookie)) {
         router.push("/admin/login");
       }
     }
