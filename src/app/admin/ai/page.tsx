@@ -35,7 +35,7 @@ export default function AdminAIPage() {
         setAiSuggestion(data.suggestion);
         showToast("AI draft generated for review!", "success");
       }
-    } catch (err: any) {
+    } catch {
       showToast("Failed to generate AI suggestion", "error");
     } finally {
       setGenerating(false);
@@ -117,7 +117,7 @@ export default function AdminAIPage() {
               <label className="block text-xs font-mono font-semibold text-zinc-300 mb-2">Generation Tool</label>
               <select
                 value={promptType}
-                onChange={(e) => setPromptType(e.target.value as any)}
+                onChange={(e) => setPromptType(e.target.value as "project_description" | "improve_text" | "bio_summary")}
                 className="w-full px-4 py-3 rounded-2xl bg-zinc-900 border border-zinc-800 text-white text-xs font-mono focus:outline-none"
               >
                 <option value="project_description">Project Description Draft</option>
@@ -153,7 +153,7 @@ export default function AdminAIPage() {
           </div>
 
           <div className="p-3 rounded-2xl bg-zinc-900/80 border border-zinc-800 text-[11px] font-mono text-zinc-400 flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+            <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
             <span>Note: Generated copy is presented for Admin review. AI will NEVER automatically publish content without manual confirmation.</span>
           </div>
 

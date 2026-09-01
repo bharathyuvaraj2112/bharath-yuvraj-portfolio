@@ -1,6 +1,8 @@
 "use client";
 
-import { profileData } from "@/data/profile";
+import { useState, useEffect } from "react";
+import { profileData as defaultProfile, ProfileData } from "@/data/profile";
+import { getProfileFromFirestore } from "@/lib/firebase/profile";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { BrainCircuit, Code2, Cpu, Sparkles, Target, Compass, BookOpen } from "lucide-react";
 import { motion } from "framer-motion";
@@ -13,6 +15,16 @@ const iconMap: Record<string, React.ReactNode> = {
 };
 
 export function About() {
+  const [profile, setProfile] = useState<ProfileData>(defaultProfile);
+
+  useEffect(() => {
+    async function load() {
+      const data = await getProfileFromFirestore();
+      if (data) setProfile(data);
+    }
+    load();
+  }, []);
+
   return (
     <section id="about" className="py-24 relative bg-zinc-50/50 dark:bg-zinc-950/40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -44,7 +56,7 @@ export function About() {
                 </h3>
               </div>
               <p className="text-zinc-600 dark:text-zinc-300 leading-relaxed">
-                {profileData.aboutIntro}
+                {profile.aboutIntro}
               </p>
             </div>
 
@@ -59,7 +71,7 @@ export function About() {
                 </h3>
               </div>
               <p className="text-zinc-600 dark:text-zinc-300 leading-relaxed">
-                {profileData.aboutFocus}
+                {profile.aboutFocus}
               </p>
             </div>
 
@@ -74,7 +86,7 @@ export function About() {
                 </h3>
               </div>
               <p className="text-zinc-600 dark:text-zinc-300 leading-relaxed">
-                {profileData.aboutPhilosophy}
+                {profile.aboutPhilosophy}
               </p>
             </div>
           </motion.div>
@@ -87,7 +99,7 @@ export function About() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="lg:col-span-6 grid grid-cols-1 sm:grid-cols-2 gap-6"
           >
-            {profileData.infoCards.map((card, idx) => (
+            {profile.infoCards?.map((card, idx) => (
               <div
                 key={idx}
                 className="glass-card rounded-2xl p-6 flex flex-col justify-between group hover:-translate-y-1 transition-all duration-300 border border-zinc-200 dark:border-zinc-800"

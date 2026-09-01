@@ -34,8 +34,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (currentUser) {
         const authorized = await isUserAdmin(currentUser);
         setIsAdmin(authorized);
+        if (authorized) {
+          document.cookie = "admin_session=true; path=/; max-age=86400; SameSite=Lax";
+        } else {
+          document.cookie = "admin_session=; path=/; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 GMT;";
+        }
       } else {
         setIsAdmin(false);
+        document.cookie = "admin_session=; path=/; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 GMT;";
       }
       setLoading(false);
     });

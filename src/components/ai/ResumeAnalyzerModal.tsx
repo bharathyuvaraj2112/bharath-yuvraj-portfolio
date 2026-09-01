@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { FileText, Sparkles, X, Upload, Loader2, CheckCircle2, ShieldCheck } from "lucide-react";
+import { FileText, Sparkles, X, Loader2, CheckCircle2, ShieldCheck } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export function ResumeAnalyzerModal() {
@@ -30,7 +30,7 @@ export function ResumeAnalyzerModal() {
       } else {
         setAnalysisResult(data.analysis);
       }
-    } catch (err: any) {
+    } catch {
       setError("Failed to process resume analysis. Please try again.");
     } finally {
       setAnalyzing(false);
@@ -84,7 +84,7 @@ export function ResumeAnalyzerModal() {
 
               {/* Privacy Security Callout */}
               <div className="p-3 rounded-2xl bg-zinc-900/90 border border-zinc-800 text-[11px] font-mono text-zinc-400 flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
                 <span>Strict Privacy Guarantee: Uploaded text is processed in memory on the server and is NEVER stored in database.</span>
               </div>
 

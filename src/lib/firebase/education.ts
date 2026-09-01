@@ -3,12 +3,12 @@ import {
   doc,
   getDocs,
   addDoc,
-  updateDoc,
+  setDoc,
   deleteDoc,
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "./config";
-import { EducationItem, educationData } from "@/data/education";
+import { EducationItem } from "@/data/education";
 
 const EDUCATION_COLLECTION = "education";
 
@@ -22,9 +22,9 @@ export async function getEducationFromFirestore(): Promise<EducationItem[]> {
       })) as EducationItem[];
     }
   } catch (err) {
-    console.warn("Firestore fetch education failed, falling back to static educationData:", err);
+    console.warn("Firestore fetch education failed:", err);
   }
-  return educationData;
+  return [];
 }
 
 export async function createEducationInFirestore(item: Omit<EducationItem, "id">): Promise<string> {
@@ -37,10 +37,14 @@ export async function createEducationInFirestore(item: Omit<EducationItem, "id">
 
 export async function updateEducationInFirestore(id: string, updates: Partial<EducationItem>): Promise<void> {
   const docRef = doc(db, EDUCATION_COLLECTION, id);
-  await updateDoc(docRef, {
-    ...updates,
-    updatedAt: serverTimestamp(),
-  });
+  await setDoc(
+    docRef,
+    {
+      ...updates,
+      updatedAt: serverTimestamp(),
+    },
+    { merge: true }
+  );
 }
 
 export async function deleteEducationFromFirestore(id: string): Promise<void> {

@@ -1,6 +1,8 @@
 "use client";
 
-import { profileData } from "@/data/profile";
+import { useState, useEffect } from "react";
+import { profileData as defaultProfile, ProfileData } from "@/data/profile";
+import { getProfileFromFirestore } from "@/lib/firebase/profile";
 import { GithubIcon, LinkedinIcon } from "@/components/ui/SocialIcons";
 import { Terminal, Mail, ArrowUp } from "lucide-react";
 
@@ -16,6 +18,16 @@ const quickLinks = [
 ];
 
 export function Footer() {
+  const [profile, setProfile] = useState<ProfileData>(defaultProfile);
+
+  useEffect(() => {
+    async function load() {
+      const data = await getProfileFromFirestore();
+      if (data) setProfile(data);
+    }
+    load();
+  }, []);
+
   const scrollToTop = (e: React.MouseEvent) => {
     e.preventDefault();
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -36,10 +48,10 @@ export function Footer() {
               <div className="w-8 h-8 rounded-xl bg-zinc-900 dark:bg-white text-white dark:text-black flex items-center justify-center shadow-xs">
                 <Terminal className="w-4 h-4" />
               </div>
-              <span>{profileData.name}</span>
+              <span>{profile.name}</span>
             </a>
             <p className="text-xs font-mono text-zinc-600 dark:text-zinc-400">
-              {profileData.title}
+              {profile.title}
             </p>
           </div>
 
@@ -59,31 +71,37 @@ export function Footer() {
           {/* Social Icons & Back to Top */}
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
-              <a
-                href={profileData.socials.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="GitHub Profile"
-                className="p-2 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white transition-colors"
-              >
-                <GithubIcon className="w-4 h-4" />
-              </a>
-              <a
-                href={profileData.socials.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="LinkedIn Profile"
-                className="p-2 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white transition-colors"
-              >
-                <LinkedinIcon className="w-4 h-4" />
-              </a>
-              <a
-                href={profileData.socials.email}
-                aria-label="Send Email"
-                className="p-2 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white transition-colors"
-              >
-                <Mail className="w-4 h-4" />
-              </a>
+              {(profile.githubUrl || profile.socials?.github) && (
+                <a
+                  href={profile.githubUrl || profile.socials?.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="GitHub Profile"
+                  className="p-2 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white transition-colors"
+                >
+                  <GithubIcon className="w-4 h-4" />
+                </a>
+              )}
+              {(profile.linkedinUrl || profile.socials?.linkedin) && (
+                <a
+                  href={profile.linkedinUrl || profile.socials?.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="LinkedIn Profile"
+                  className="p-2 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white transition-colors"
+                >
+                  <LinkedinIcon className="w-4 h-4" />
+                </a>
+              )}
+              {profile.email && (
+                <a
+                  href={`mailto:${profile.email}`}
+                  aria-label="Send Email"
+                  className="p-2 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white transition-colors"
+                >
+                  <Mail className="w-4 h-4" />
+                </a>
+              )}
             </div>
 
             <button
@@ -100,9 +118,9 @@ export function Footer() {
 
         {/* Copyright */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-zinc-500 dark:text-zinc-400 gap-4">
-          <p>© 2026 Bharath Yuvraj. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} {profile.name}. All rights reserved.</p>
           <p className="font-mono text-[11px]">
-            Monochrome Design • Next.js & TypeScript & Tailwind CSS
+            Monochrome Design • Next.js & TypeScript & Firebase
           </p>
         </div>
 

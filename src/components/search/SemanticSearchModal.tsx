@@ -1,9 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Search, Sparkles, X, ExternalLink, ArrowRight, FolderGit2, Wrench, Award, Trophy, GraduationCap } from "lucide-react";
+import { Search, Sparkles, X, ArrowRight, FolderGit2, Wrench, Award, Trophy, GraduationCap } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import Link from "next/link";
 
 interface SearchResultItem {
   id: string;
@@ -12,7 +11,7 @@ interface SearchResultItem {
   content: string;
   source: string;
   score: number;
-  metadata?: any;
+  metadata?: Record<string, unknown>;
 }
 
 export function SemanticSearchModal() {
@@ -23,7 +22,6 @@ export function SemanticSearchModal() {
 
   useEffect(() => {
     if (!query.trim()) {
-      setResults([]);
       return;
     }
 
@@ -42,6 +40,8 @@ export function SemanticSearchModal() {
 
     return () => clearTimeout(timer);
   }, [query]);
+
+  const displayedResults = query.trim() ? results : [];
 
   const getItemIcon = (type: string) => {
     switch (type) {
@@ -86,7 +86,7 @@ export function SemanticSearchModal() {
             >
               {/* Search Input Bar */}
               <div className="flex items-center p-4 border-b border-zinc-800 bg-zinc-900/60">
-                <Search className="w-5 h-5 text-zinc-400 mr-3 flex-shrink-0" />
+                <Search className="w-5 h-5 text-zinc-400 mr-3 shrink-0" />
                 <input
                   type="text"
                   autoFocus
@@ -112,16 +112,16 @@ export function SemanticSearchModal() {
                     <Sparkles className="w-4 h-4 animate-spin text-white" />
                     <span>Searching vectors...</span>
                   </div>
-                ) : query && results.length === 0 ? (
+                ) : query && displayedResults.length === 0 ? (
                   <div className="py-8 text-center text-xs font-mono text-zinc-500">
-                    No matching portfolio documents found for "{query}".
+                    No matching portfolio documents found for &quot;{query}&quot;.
                   </div>
                 ) : !query ? (
                   <div className="py-6 text-center text-xs font-mono text-zinc-500">
-                    Try searching: <span className="text-zinc-300">"accident detection"</span>, <span className="text-zinc-300">"Python ML"</span>, <span className="text-zinc-300">"full-stack"</span>, or <span className="text-zinc-300">"certifications"</span>.
+                    Try searching: <span className="text-zinc-300">&quot;accident detection&quot;</span>, <span className="text-zinc-300">&quot;Python ML&quot;</span>, <span className="text-zinc-300">&quot;full-stack&quot;</span>, or <span className="text-zinc-300">&quot;certifications&quot;</span>.
                   </div>
                 ) : (
-                  results.map((res) => (
+                  displayedResults.map((res) => (
                     <div
                       key={res.id}
                       className="p-4 rounded-2xl bg-zinc-900/80 border border-zinc-800 hover:border-zinc-600 transition-colors space-y-2"

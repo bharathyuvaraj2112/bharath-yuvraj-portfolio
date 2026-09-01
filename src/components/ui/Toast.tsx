@@ -50,7 +50,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
               exit={{ opacity: 0, y: 20, scale: 0.95 }}
               className="pointer-events-auto flex items-start gap-3 p-4 rounded-2xl bg-zinc-900 border border-zinc-700 text-white shadow-2xl backdrop-blur-md"
             >
-              <div className="mt-0.5 flex-shrink-0">
+              <div className="mt-0.5 shrink-0">
                 {toast.type === "success" && <CheckCircle2 className="w-5 h-5 text-emerald-400" />}
                 {toast.type === "error" && <AlertCircle className="w-5 h-5 text-rose-400" />}
                 {toast.type === "info" && <Info className="w-5 h-5 text-zinc-300" />}

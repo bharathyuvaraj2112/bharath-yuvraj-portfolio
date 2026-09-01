@@ -4,7 +4,7 @@ import {
   getDocs,
   getDoc,
   addDoc,
-  updateDoc,
+  setDoc,
   deleteDoc,
   query,
   orderBy,
@@ -26,9 +26,9 @@ export async function getProjectsFromFirestore(): Promise<Project[]> {
       })) as Project[];
     }
   } catch (err) {
-    console.warn("Firestore fetch projects failed, falling back to static projectsData:", err);
+    console.warn("Firestore fetch projects failed:", err);
   }
-  return projectsData;
+  return [];
 }
 
 export async function getProjectFromFirestore(id: string): Promise<Project | null> {
@@ -41,7 +41,7 @@ export async function getProjectFromFirestore(id: string): Promise<Project | nul
   } catch (e) {
     console.warn("Error getting project from Firestore:", e);
   }
-  return projectsData.find((p) => p.id === id) || null;
+  return null;
 }
 
 export async function createProjectInFirestore(projectData: Omit<Project, "id">): Promise<string> {
@@ -55,10 +55,14 @@ export async function createProjectInFirestore(projectData: Omit<Project, "id">)
 
 export async function updateProjectInFirestore(id: string, updates: Partial<Project>): Promise<void> {
   const docRef = doc(db, PROJECTS_COLLECTION, id);
-  await updateDoc(docRef, {
-    ...updates,
-    updatedAt: serverTimestamp(),
-  });
+  await setDoc(
+    docRef,
+    {
+      ...updates,
+      updatedAt: serverTimestamp(),
+    },
+    { merge: true }
+  );
 }
 
 export async function deleteProjectFromFirestore(id: string): Promise<void> {

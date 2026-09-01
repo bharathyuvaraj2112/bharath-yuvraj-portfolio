@@ -35,7 +35,7 @@ export function ProjectCard({ project, onSelect }: ProjectCardProps) {
     >
       <div>
         {/* Banner Visual Header - Monochrome Grayscale Gradient */}
-        <div className="relative h-48 w-full bg-gradient-to-br from-zinc-900 via-zinc-950 to-black flex items-center justify-center overflow-hidden">
+        <div className="relative h-48 w-full bg-linear-to-br from-zinc-900 via-zinc-950 to-black flex items-center justify-center overflow-hidden">
           {/* Subtle Grid Overlay */}
           <div className="absolute inset-0 bg-tech-grid opacity-30" />
 

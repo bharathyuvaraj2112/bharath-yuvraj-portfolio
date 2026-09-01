@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { profileData } from "@/data/profile";
+import { useState, useEffect } from "react";
+import { profileData as defaultProfile, ProfileData } from "@/data/profile";
+import { getProfileFromFirestore } from "@/lib/firebase/profile";
 import { submitContactMessage } from "@/lib/firebase/messages";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { GithubIcon, LinkedinIcon } from "@/components/ui/SocialIcons";
@@ -9,6 +10,7 @@ import { Mail, Send, CheckCircle2, MessageSquare } from "lucide-react";
 import { motion } from "framer-motion";
 
 export function Contact() {
+  const [profile, setProfile] = useState<ProfileData>(defaultProfile);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -18,7 +20,14 @@ export function Contact() {
 
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function load() {
+      const data = await getProfileFromFirestore();
+      if (data) setProfile(data);
+    }
+    load();
+  }, []);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -31,12 +40,11 @@ export function Contact() {
     if (!formData.name || !formData.email || !formData.message) return;
 
     setIsSubmitting(true);
-    setError(null);
 
     try {
       await submitContactMessage(formData);
       setSubmitted(true);
-    } catch (err: any) {
+    } catch (err) {
       console.warn("Firestore message save failed, simulating successful send fallback:", err);
       setSubmitted(true);
     } finally {
@@ -66,7 +74,7 @@ export function Contact() {
           >
             {/* Direct Email Card */}
             <div className="glass-card rounded-3xl p-6 sm:p-8 flex items-start gap-4 border border-zinc-800">
-              <div className="p-3.5 rounded-2xl bg-zinc-900 text-white border border-zinc-700 flex-shrink-0">
+              <div className="p-3.5 rounded-2xl bg-zinc-900 text-white border border-zinc-700 shrink-0">
                 <Mail className="w-6 h-6" />
               </div>
               <div>
@@ -74,10 +82,10 @@ export function Contact() {
                   Email Me Direct
                 </span>
                 <a
-                  href={`mailto:${profileData.email}`}
+                  href={`mailto:${profile.email}`}
                   className="text-base font-bold text-white hover:underline transition-colors break-all"
                 >
-                  {profileData.email}
+                  {profile.email}
                 </a>
                 <p className="text-xs text-zinc-400 mt-1">
                   Open for technical discussions & internship queries.
@@ -91,31 +99,35 @@ export function Contact() {
                 Professional Network
               </span>
               <div className="flex flex-col gap-3">
-                <a
-                  href={profileData.socials.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-between p-3 rounded-2xl bg-zinc-900 text-white border border-zinc-800 hover:border-zinc-500 transition-colors text-sm font-medium"
-                >
-                  <div className="flex items-center gap-3">
-                    <GithubIcon className="w-5 h-5 text-white" />
-                    <span>GitHub Profile</span>
-                  </div>
-                  <span className="text-xs font-mono text-zinc-400">@bharathyuvraj</span>
-                </a>
+                {(profile.githubUrl || profile.socials?.github) && (
+                  <a
+                    href={profile.githubUrl || profile.socials?.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between p-3 rounded-2xl bg-zinc-900 text-white border border-zinc-800 hover:border-zinc-500 transition-colors text-sm font-medium"
+                  >
+                    <div className="flex items-center gap-3">
+                      <GithubIcon className="w-5 h-5 text-white" />
+                      <span>GitHub Profile</span>
+                    </div>
+                    <span className="text-xs font-mono text-zinc-400">GitHub</span>
+                  </a>
+                )}
 
-                <a
-                  href={profileData.socials.linkedin}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-between p-3 rounded-2xl bg-zinc-900 text-white border border-zinc-800 hover:border-zinc-500 transition-colors text-sm font-medium"
-                >
-                  <div className="flex items-center gap-3">
-                    <LinkedinIcon className="w-5 h-5 text-white" />
-                    <span>LinkedIn Profile</span>
-                  </div>
-                  <span className="text-xs font-mono text-zinc-400">@bharathyuvraj</span>
-                </a>
+                {(profile.linkedinUrl || profile.socials?.linkedin) && (
+                  <a
+                    href={profile.linkedinUrl || profile.socials?.linkedin}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between p-3 rounded-2xl bg-zinc-900 text-white border border-zinc-800 hover:border-zinc-500 transition-colors text-sm font-medium"
+                  >
+                    <div className="flex items-center gap-3">
+                      <LinkedinIcon className="w-5 h-5 text-white" />
+                      <span>LinkedIn Profile</span>
+                    </div>
+                    <span className="text-xs font-mono text-zinc-400">LinkedIn</span>
+                  </a>
+                )}
               </div>
             </div>
           </motion.div>
@@ -232,7 +244,7 @@ export function Contact() {
                   </button>
 
                   <a
-                    href={`mailto:${profileData.email}`}
+                    href={`mailto:${profile.email}`}
                     className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl border border-zinc-800 text-zinc-200 hover:border-zinc-500 text-sm font-semibold transition-colors"
                   >
                     <Mail className="w-4 h-4" />

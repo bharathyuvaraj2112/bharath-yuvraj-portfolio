@@ -3,12 +3,12 @@ import {
   doc,
   getDocs,
   addDoc,
-  updateDoc,
+  setDoc,
   deleteDoc,
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "./config";
-import { Certification, certificationsData } from "@/data/certifications";
+import { Certification } from "@/data/certifications";
 
 const CERTIFICATIONS_COLLECTION = "certifications";
 
@@ -22,9 +22,9 @@ export async function getCertificationsFromFirestore(): Promise<Certification[]>
       })) as Certification[];
     }
   } catch (err) {
-    console.warn("Firestore fetch certifications failed, falling back to static certificationsData:", err);
+    console.warn("Firestore fetch certifications failed:", err);
   }
-  return certificationsData;
+  return [];
 }
 
 export async function createCertificationInFirestore(cert: Omit<Certification, "id">): Promise<string> {
@@ -37,10 +37,14 @@ export async function createCertificationInFirestore(cert: Omit<Certification, "
 
 export async function updateCertificationInFirestore(id: string, updates: Partial<Certification>): Promise<void> {
   const docRef = doc(db, CERTIFICATIONS_COLLECTION, id);
-  await updateDoc(docRef, {
-    ...updates,
-    updatedAt: serverTimestamp(),
-  });
+  await setDoc(
+    docRef,
+    {
+      ...updates,
+      updatedAt: serverTimestamp(),
+    },
+    { merge: true }
+  );
 }
 
 export async function deleteCertificationFromFirestore(id: string): Promise<void> {

@@ -125,7 +125,7 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
                     key={idx}
                     className="p-3 rounded-xl bg-zinc-900/80 border border-zinc-800 text-xs text-zinc-200 flex items-start gap-2.5"
                   >
-                    <span className="w-1.5 h-1.5 rounded-full bg-white mt-1.5 flex-shrink-0" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-white mt-1.5 shrink-0" />
                     <span>{feature}</span>
                   </div>
                 ))}

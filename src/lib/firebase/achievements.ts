@@ -3,12 +3,12 @@ import {
   doc,
   getDocs,
   addDoc,
-  updateDoc,
+  setDoc,
   deleteDoc,
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "./config";
-import { Achievement, achievementsData } from "@/data/achievements";
+import { Achievement } from "@/data/achievements";
 
 const ACHIEVEMENTS_COLLECTION = "achievements";
 
@@ -22,9 +22,9 @@ export async function getAchievementsFromFirestore(): Promise<Achievement[]> {
       })) as Achievement[];
     }
   } catch (err) {
-    console.warn("Firestore fetch achievements failed, falling back to static achievementsData:", err);
+    console.warn("Firestore fetch achievements failed:", err);
   }
-  return achievementsData;
+  return [];
 }
 
 export async function createAchievementInFirestore(achievement: Omit<Achievement, "id">): Promise<string> {
@@ -37,10 +37,14 @@ export async function createAchievementInFirestore(achievement: Omit<Achievement
 
 export async function updateAchievementInFirestore(id: string, updates: Partial<Achievement>): Promise<void> {
   const docRef = doc(db, ACHIEVEMENTS_COLLECTION, id);
-  await updateDoc(docRef, {
-    ...updates,
-    updatedAt: serverTimestamp(),
-  });
+  await setDoc(
+    docRef,
+    {
+      ...updates,
+      updatedAt: serverTimestamp(),
+    },
+    { merge: true }
+  );
 }
 
 export async function deleteAchievementFromFirestore(id: string): Promise<void> {

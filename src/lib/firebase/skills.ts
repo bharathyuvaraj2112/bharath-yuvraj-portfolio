@@ -3,12 +3,12 @@ import {
   doc,
   getDocs,
   addDoc,
-  updateDoc,
+  setDoc,
   deleteDoc,
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "./config";
-import { SkillCategory, skillCategories } from "@/data/skills";
+import { SkillCategory } from "@/data/skills";
 
 const SKILLS_COLLECTION = "skills";
 
@@ -22,9 +22,9 @@ export async function getSkillsFromFirestore(): Promise<SkillCategory[]> {
       })) as SkillCategory[];
     }
   } catch (err) {
-    console.warn("Firestore fetch skills failed, falling back to static skillCategories:", err);
+    console.warn("Firestore fetch skills failed:", err);
   }
-  return skillCategories;
+  return [];
 }
 
 export async function createSkillCategoryInFirestore(category: Omit<SkillCategory, "id">): Promise<string> {
@@ -37,10 +37,14 @@ export async function createSkillCategoryInFirestore(category: Omit<SkillCategor
 
 export async function updateSkillCategoryInFirestore(id: string, updates: Partial<SkillCategory>): Promise<void> {
   const docRef = doc(db, SKILLS_COLLECTION, id);
-  await updateDoc(docRef, {
-    ...updates,
-    updatedAt: serverTimestamp(),
-  });
+  await setDoc(
+    docRef,
+    {
+      ...updates,
+      updatedAt: serverTimestamp(),
+    },
+    { merge: true }
+  );
 }
 
 export async function deleteSkillCategoryFromFirestore(id: string): Promise<void> {

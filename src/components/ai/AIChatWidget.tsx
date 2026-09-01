@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Bot, Sparkles, Send, X, RotateCcw, MessageSquare, Loader2, User, ChevronDown } from "lucide-react";
+import { Bot, Sparkles, Send, X, RotateCcw, Loader2, User } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface Message {
@@ -71,7 +71,7 @@ export function AIChatWidget() {
       } else {
         setMessages((prev) => [...prev, { role: "assistant", content: data.response }]);
       }
-    } catch (err: any) {
+    } catch {
       setError("Sorry, the AI assistant is temporarily unavailable. Please try again later.");
     } finally {
       setLoading(false);
@@ -115,7 +115,7 @@ export function AIChatWidget() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.25 }}
-            className="fixed bottom-24 right-4 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-[420px] max-h-[600px] h-[80vh] flex flex-col rounded-3xl bg-zinc-950/95 border border-zinc-800 backdrop-blur-xl shadow-2xl overflow-hidden font-sans"
+            className="fixed bottom-24 right-4 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-105 max-h-150 h-[80vh] flex flex-col rounded-3xl bg-zinc-950/95 border border-zinc-800 backdrop-blur-xl shadow-2xl overflow-hidden font-sans"
           >
             {/* Header */}
             <div className="flex items-center justify-between p-4 bg-zinc-900/80 border-b border-zinc-800">
@@ -128,7 +128,7 @@ export function AIChatWidget() {
                     <span>Portfolio AI Assistant</span>
                     <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                   </h3>
-                  <span className="text-[10px] font-mono text-zinc-400">Powered by Bharath's Portfolio Context</span>
+                  <span className="text-[10px] font-mono text-zinc-400">Powered by Bharath&apos;s Portfolio Context</span>
                 </div>
               </div>
 
@@ -158,7 +158,7 @@ export function AIChatWidget() {
                   className={`flex gap-3 ${msg.role === "user" ? "justify-end" : "justify-start"}`}
                 >
                   {msg.role === "assistant" && (
-                    <div className="w-7 h-7 rounded-xl bg-zinc-900 border border-zinc-800 text-white flex items-center justify-center flex-shrink-0 mt-1">
+                    <div className="w-7 h-7 rounded-xl bg-zinc-900 border border-zinc-800 text-white flex items-center justify-center shrink-0 mt-1">
                       <Sparkles className="w-3.5 h-3.5" />
                     </div>
                   )}
@@ -174,7 +174,7 @@ export function AIChatWidget() {
                   </div>
 
                   {msg.role === "user" && (
-                    <div className="w-7 h-7 rounded-xl bg-zinc-800 text-zinc-300 flex items-center justify-center flex-shrink-0 mt-1">
+                    <div className="w-7 h-7 rounded-xl bg-zinc-800 text-zinc-300 flex items-center justify-center shrink-0 mt-1">
                       <User className="w-3.5 h-3.5" />
                     </div>
                   )}

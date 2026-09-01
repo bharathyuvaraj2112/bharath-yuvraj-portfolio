@@ -1,24 +1,36 @@
 "use client";
 
-import { profileData } from "@/data/profile";
+import { useState, useEffect } from "react";
+import { profileData as defaultProfile, ProfileData } from "@/data/profile";
+import { getProfileFromFirestore } from "@/lib/firebase/profile";
 import { motion } from "framer-motion";
 import { Sparkles, Terminal, Code2, Brain } from "lucide-react";
 import Image from "next/image";
 
 export function ProfileVisual() {
+  const [profile, setProfile] = useState<ProfileData>(defaultProfile);
+
+  useEffect(() => {
+    async function load() {
+      const data = await getProfileFromFirestore();
+      if (data) setProfile(data);
+    }
+    load();
+  }, []);
+
   return (
     <div className="relative w-full max-w-md mx-auto aspect-square flex items-center justify-center p-4">
       {/* Background Metallic Radial Glow */}
-      <div className="absolute inset-0 bg-gradient-to-tr from-zinc-700/20 via-zinc-500/10 to-zinc-800/30 rounded-full blur-3xl -z-10" />
+      <div className="absolute inset-0 bg-linear-to-tr from-zinc-700/20 via-zinc-500/10 to-zinc-800/30 rounded-full blur-3xl -z-10" />
 
       {/* Outer Metallic Frame Container */}
-      <div className="relative w-full h-full rounded-3xl p-3 bg-gradient-to-b from-zinc-700 via-zinc-800 to-zinc-950 border border-zinc-700/80 shadow-2xl flex flex-col items-center justify-center overflow-hidden group">
+      <div className="relative w-full h-full rounded-3xl p-3 bg-linear-to-b from-zinc-700 via-zinc-800 to-zinc-950 border border-zinc-700/80 shadow-2xl flex flex-col items-center justify-center overflow-hidden group">
         
         {/* Inner Profile Image Frame */}
         <div className="relative w-full h-full rounded-2xl overflow-hidden border border-zinc-800 bg-zinc-950 flex items-center justify-center">
           <Image
-            src={profileData.profilePhotoUrl}
-            alt={profileData.name}
+            src={profile.profilePhotoUrl || "/profile.jpg"}
+            alt={profile.name}
             fill
             sizes="(max-width: 768px) 100vw, 400px"
             className="object-cover object-center group-hover:scale-105 transition-transform duration-500 filter brightness-95 contrast-105"
@@ -26,7 +38,7 @@ export function ProfileVisual() {
           />
 
           {/* Grayscale Ambient Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/20 to-transparent opacity-80" />
+          <div className="absolute inset-0 bg-linear-to-t from-zinc-950 via-zinc-950/20 to-transparent opacity-80" />
 
           {/* Bottom Overlay Label */}
           <div className="absolute bottom-4 left-4 right-4 z-10 flex items-center justify-between p-3 rounded-xl bg-zinc-950/85 backdrop-blur-md border border-zinc-800">
@@ -36,10 +48,10 @@ export function ProfileVisual() {
               </div>
               <div>
                 <h4 className="text-xs font-bold text-white leading-tight">
-                  {profileData.name}
+                  {profile.name}
                 </h4>
                 <p className="text-[10px] font-mono text-zinc-400">
-                  AI / ML & Full Stack
+                  {profile.title || "AI / ML & Full Stack"}
                 </p>
               </div>
             </div>
