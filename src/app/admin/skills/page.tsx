@@ -7,7 +7,6 @@ import {
   createSkillCategoryInFirestore,
   updateSkillCategoryInFirestore,
   deleteSkillCategoryFromFirestore,
-  seedSkillsToFirestore,
 } from "@/lib/firebase/skills";
 import { SkillCategory, SkillItem } from "@/data/skills";
 import { useToast } from "@/components/ui/Toast";
@@ -22,7 +21,6 @@ import {
   X,
   CheckCircle2,
   FolderPlus,
-  RefreshCw,
   Layers,
   BookOpen,
 } from "lucide-react";
@@ -30,7 +28,6 @@ import {
 export default function AdminSkillsPage() {
   const [categories, setCategories] = useState<SkillCategory[]>([]);
   const [loading, setLoading] = useState(true);
-  const [seeding, setSeeding] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
   const { showToast } = useToast();
 
@@ -86,21 +83,6 @@ export default function AdminSkillsPage() {
       isMounted = false;
     };
   }, [showToast]);
-
-  // Seed Default Categories
-  const handleSeedSkills = async () => {
-    setSeeding(true);
-    try {
-      const seeded = await seedSkillsToFirestore();
-      setCategories(seeded);
-      showToast("Seeded default skills & technologies stack!", "success");
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : String(err);
-      showToast(msg || "Failed to seed default skills", "error");
-    } finally {
-      setSeeding(false);
-    }
-  };
 
   // Create Category
   const handleCreateCategory = async (e: React.FormEvent) => {
@@ -288,16 +270,6 @@ export default function AdminSkillsPage() {
 
           <div className="flex flex-wrap items-center gap-3">
             <button
-              onClick={handleSeedSkills}
-              disabled={seeding || loading}
-              className="px-4 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 text-zinc-300 text-xs font-mono font-semibold transition-colors flex items-center gap-2 disabled:opacity-50"
-              title="Populate default technical stack"
-            >
-              {seeding ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4 text-emerald-400" />}
-              <span>{seeding ? "Seeding..." : "Seed Default Stack"}</span>
-            </button>
-
-            <button
               onClick={() => {
                 if (categories.length > 0) {
                   setTargetCatId(categories[0].id);
@@ -342,21 +314,13 @@ export default function AdminSkillsPage() {
             <div>
               <h3 className="text-base font-bold text-white">No Skill Categories Found</h3>
               <p className="text-xs font-mono text-zinc-400 mt-1">
-                Your database is empty. You can create custom categories or click below to seed the standard technical stack.
+                Your skills database is empty. Click below to create your first skill category!
               </p>
             </div>
             <div className="flex justify-center gap-3 pt-2">
               <button
-                onClick={handleSeedSkills}
-                disabled={seeding}
-                className="px-5 py-2.5 rounded-xl bg-white text-black text-xs font-mono font-bold hover:bg-zinc-200 transition-colors flex items-center gap-2"
-              >
-                {seeding ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
-                <span>Seed Default Categories</span>
-              </button>
-              <button
                 onClick={() => setIsAddCategoryOpen(true)}
-                className="px-5 py-2.5 rounded-xl bg-zinc-900 border border-zinc-800 text-white text-xs font-mono font-semibold hover:bg-zinc-800 transition-colors flex items-center gap-2"
+                className="px-6 py-3 rounded-xl bg-white text-black text-xs font-mono font-bold hover:bg-zinc-200 transition-colors flex items-center gap-2 shadow-md"
               >
                 <FolderPlus className="w-4 h-4" />
                 <span>Create New Category</span>
