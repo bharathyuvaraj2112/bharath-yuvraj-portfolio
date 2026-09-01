@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { profileData } from "@/data/profile";
+import { profileData as defaultProfile, ProfileData } from "@/data/profile";
+import { getProfileFromFirestore } from "@/lib/firebase/profile";
 import { SemanticSearchModal } from "@/components/search/SemanticSearchModal";
 import { ResumeAnalyzerModal } from "@/components/ai/ResumeAnalyzerModal";
 import { Menu, X, FileText, Terminal } from "lucide-react";
@@ -19,9 +20,18 @@ const navItems = [
 ];
 
 export function Navbar() {
+  const [profile, setProfile] = useState<ProfileData>(defaultProfile);
   const [activeSection, setActiveSection] = useState("hero");
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    async function load() {
+      const data = await getProfileFromFirestore();
+      if (data) setProfile(data);
+    }
+    load();
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -52,6 +62,8 @@ export function Navbar() {
     }
   };
 
+  const resumeHref = profile.resumeUrl || profile.resumePath;
+
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
@@ -74,7 +86,7 @@ export function Navbar() {
             <div className="w-8 h-8 rounded-xl bg-white text-black flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
               <Terminal className="w-4 h-4" />
             </div>
-            <span className="font-sans">{profileData.name}</span>
+            <span className="font-sans">{profile.name}</span>
             <span className="hidden xl:inline-block px-2 py-0.5 text-[10px] font-mono rounded-full bg-zinc-800 text-zinc-200 border border-zinc-700">
               AI / ML
             </span>
@@ -116,15 +128,17 @@ export function Navbar() {
           <div className="hidden sm:flex items-center gap-2.5">
             <SemanticSearchModal />
             <ResumeAnalyzerModal />
-            <a
-              href={profileData.resumePath}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-full bg-white text-black hover:bg-zinc-200 transition-all duration-200 shadow-sm focus:outline-none"
-            >
-              <FileText className="w-3.5 h-3.5" />
-              <span>Resume</span>
-            </a>
+            {resumeHref ? (
+              <a
+                href={resumeHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-full bg-white text-black hover:bg-zinc-200 transition-all duration-200 shadow-sm focus:outline-none"
+              >
+                <FileText className="w-3.5 h-3.5" />
+                <span>Resume</span>
+              </a>
+            ) : null}
           </div>
 
           {/* Mobile Menu Toggle Button */}
@@ -176,17 +190,19 @@ export function Navbar() {
                   </a>
                 );
               })}
-              <div className="pt-2 mt-2 border-t border-zinc-800">
-                <a
-                  href={profileData.resumePath}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-xl bg-white text-black shadow-sm"
-                >
-                  <FileText className="w-4 h-4" />
-                  <span>Download Resume</span>
-                </a>
-              </div>
+              {resumeHref && (
+                <div className="pt-2 mt-2 border-t border-zinc-800">
+                  <a
+                    href={resumeHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-xl bg-white text-black shadow-sm"
+                  >
+                    <FileText className="w-4 h-4" />
+                    <span>Download Resume</span>
+                  </a>
+                </div>
+              )}
             </div>
           </motion.div>
         )}

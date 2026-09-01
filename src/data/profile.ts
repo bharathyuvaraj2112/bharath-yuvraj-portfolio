@@ -35,14 +35,14 @@ export const profileData: ProfileData = {
   statusText: "Open to learning • Building • Creating",
   location: "India",
   email: "bharathyuvraj.dev@example.com",
-  resumePath: "/resume-placeholder.pdf",
+  resumePath: "",
   profilePhotoUrl: "/profile.jpeg",
   tagline: "AI & Machine Learning Student | Full Stack Developer",
   bio: "Passionate AI/ML student dedicated to building modern, intelligent digital experiences. Combining machine learning algorithms with full-stack web development to solve real-world problems.",
   availabilityStatus: "Open to learning • Building • Creating",
   githubUrl: "https://github.com/bharathyuvaraj2112/bharath-yuvraj-portfolio",
   linkedinUrl: "https://linkedin.com/in/bharathyuvraj-placeholder",
-  resumeUrl: "/resume-placeholder.pdf",
+  resumeUrl: "",
   shortBio:
     "Passionate AI/ML student dedicated to building modern, intelligent digital experiences. Combining machine learning algorithms with full-stack web development to solve real-world problems.",
   aboutIntro:

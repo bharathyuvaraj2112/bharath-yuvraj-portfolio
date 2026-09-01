@@ -1,10 +1,22 @@
 "use client";
 
-import { profileData } from "@/data/profile";
+import { useState, useEffect } from "react";
+import { profileData as defaultProfile, ProfileData } from "@/data/profile";
+import { getProfileFromFirestore } from "@/lib/firebase/profile";
 import { FileText, Mail, ArrowRight, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 
 export function ResumeCTA() {
+  const [profile, setProfile] = useState<ProfileData>(defaultProfile);
+
+  useEffect(() => {
+    async function load() {
+      const data = await getProfileFromFirestore();
+      if (data) setProfile(data);
+    }
+    load();
+  }, []);
+
   const scrollToContact = (e: React.MouseEvent) => {
     e.preventDefault();
     const element = document.getElementById("contact");
@@ -12,6 +24,8 @@ export function ResumeCTA() {
       element.scrollIntoView({ behavior: "smooth" });
     }
   };
+
+  const resumeHref = profile.resumeUrl || profile.resumePath;
 
   return (
     <section id="resume" className="py-20 relative overflow-hidden bg-zinc-50/50 dark:bg-zinc-950/40">
@@ -44,15 +58,17 @@ export function ResumeCTA() {
 
           {/* Action Buttons */}
           <div className="flex flex-wrap items-center justify-center gap-4">
-            <a
-              href={profileData.resumePath}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-2xl bg-white text-black font-bold text-sm shadow-md hover:bg-zinc-200 hover:scale-105 active:scale-95 transition-all"
-            >
-              <FileText className="w-4 h-4" />
-              <span>Download Resume</span>
-            </a>
+            {resumeHref ? (
+              <a
+                href={resumeHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-2xl bg-white text-black font-bold text-sm shadow-md hover:bg-zinc-200 hover:scale-105 active:scale-95 transition-all"
+              >
+                <FileText className="w-4 h-4" />
+                <span>Download Resume</span>
+              </a>
+            ) : null}
 
             <a
               href="#contact"
