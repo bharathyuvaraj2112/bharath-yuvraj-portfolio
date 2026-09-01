@@ -1,14 +1,13 @@
 "use client";
 
 import React, { useState } from "react";
-import { uploadFileToStorage } from "@/lib/firebase/storage";
-import { Upload, X, Check, Image as ImageIcon, Loader2 } from "lucide-react";
+import { Upload, X, Loader2 } from "lucide-react";
 import Image from "next/image";
 
 interface ImageUploaderProps {
   value: string;
   onChange: (url: string) => void;
-  folder?: "images" | "certifications";
+  folder?: "images" | "certifications" | "projects" | "profile";
   label?: string;
 }
 
@@ -28,16 +27,28 @@ export function ImageUploader({
 
     setError(null);
     setUploading(true);
-    setProgress(0);
+    setProgress(30);
 
     try {
-      const url = await uploadFileToStorage(file, folder, (prog, downloadUrl, err) => {
-        setProgress(prog);
-        if (err) setError(err);
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("folder", folder);
+
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
       });
-      onChange(url);
-    } catch (err: any) {
-      setError(err.message || "Failed to upload image.");
+
+      const data = await res.json();
+      if (!res.ok || data.error) {
+        throw new Error(data.error || "Failed to upload image to Cloudinary.");
+      }
+
+      setProgress(100);
+      onChange(data.url);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setError(msg || "Failed to upload image.");
     } finally {
       setUploading(false);
     }
@@ -85,7 +96,7 @@ export function ImageUploader({
           {uploading ? (
             <div className="flex flex-col items-center gap-2">
               <Loader2 className="w-6 h-6 text-white animate-spin" />
-              <span className="text-xs font-mono text-zinc-400">Uploading {progress}%...</span>
+              <span className="text-xs font-mono text-zinc-400">Uploading to Cloudinary {progress}%...</span>
               <div className="w-44 h-1.5 bg-zinc-800 rounded-full overflow-hidden mt-1">
                 <div
                   className="h-full bg-white transition-all duration-200"
@@ -99,7 +110,7 @@ export function ImageUploader({
                 <Upload className="w-5 h-5" />
               </div>
               <span className="text-xs font-mono text-zinc-300 font-semibold">
-                Click to upload or drag image
+                Click to upload to Cloudinary
               </span>
               <span className="text-[10px] font-mono text-zinc-500 mt-1">
                 Supports JPG, PNG, WebP (Max 10MB)
