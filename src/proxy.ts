@@ -26,6 +26,16 @@ export function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL(targetPath, request.url));
   }
 
+  // Direct /admin root route
+  if (pathname === "/admin" || pathname === "/admin/") {
+    if (!isAuthenticated) {
+      const loginUrl = new URL("/admin/login", request.url);
+      loginUrl.searchParams.set("from", "/admin/dashboard");
+      return NextResponse.redirect(loginUrl);
+    }
+    return NextResponse.redirect(new URL("/admin/dashboard", request.url));
+  }
+
   // Protect all /admin routes except /admin/login
   if (pathname.startsWith("/admin") && pathname !== "/admin/login") {
     if (!isAuthenticated) {

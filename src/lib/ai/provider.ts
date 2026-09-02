@@ -21,7 +21,7 @@ export async function generateAIResponse(
   const fullSystemPrompt = `${SYSTEM_PROMPT_TEMPLATE}\n${contextData}`;
 
   if (!apiKey) {
-    return generateFallbackResponse(messages, contextData);
+    return generateFallbackResponse(messages);
   }
 
   try {
@@ -35,7 +35,7 @@ export async function generateAIResponse(
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);
     console.warn("AI Provider call failed, serving smart fallback response:", msg);
-    return generateFallbackResponse(messages, contextData);
+    return generateFallbackResponse(messages);
   }
 }
 
@@ -162,7 +162,7 @@ async function callOpenAIAPI(
 /**
  * Smart contextual fallback engine when API key is unconfigured or offline
  */
-function generateFallbackResponse(messages: ChatMessage[], _context: string): string {
+function generateFallbackResponse(messages: ChatMessage[]): string {
   const lastMsg = messages[messages.length - 1]?.content.toLowerCase() || "";
 
   if (

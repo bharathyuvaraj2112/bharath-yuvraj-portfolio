@@ -11,7 +11,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "./config";
-import { Project, projectsData } from "@/data/projects";
+import { Project } from "@/data/projects";
 
 const PROJECTS_COLLECTION = "projects";
 
