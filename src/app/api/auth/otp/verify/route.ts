@@ -9,7 +9,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Email and OTP code are required." }, { status: 400 });
     }
 
-    const result = verifyOtp(email, otp);
+    const result = await verifyOtp(email, otp);
 
     if (!result.valid) {
       return NextResponse.json({ error: result.error || "Invalid OTP" }, { status: 400 });

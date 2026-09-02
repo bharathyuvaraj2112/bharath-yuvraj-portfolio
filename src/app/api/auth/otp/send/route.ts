@@ -13,8 +13,8 @@ export async function POST(req: Request) {
     // Generate 6-digit OTP
     const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
 
-    // Save in server OTP memory store (valid for 5 minutes)
-    setOtp(email, otpCode, 5 * 60 * 1000);
+    // Save in persistent server OTP store (valid for 5 minutes)
+    await setOtp(email, otpCode, 5 * 60 * 1000);
 
     // Send email via Nodemailer
     const emailSent = await sendOtpEmail(email, otpCode);

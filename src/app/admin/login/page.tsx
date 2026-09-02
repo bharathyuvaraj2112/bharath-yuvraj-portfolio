@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { sendAdminPasswordReset } from "@/lib/firebase/auth";
 import { useRouter } from "next/navigation";
@@ -21,6 +21,9 @@ export default function AdminLoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [infoMessage, setInfoMessage] = useState<string | null>(null);
 
+  const isSubmittingRef = useRef(false);
+  const isResendingRef = useRef(false);
+
   // Clear admin_session cookie on login page load so fresh email/password + OTP is always required
   useEffect(() => {
     document.cookie = "admin_session=; path=/; max-age=0; expires=Thu, 01 Jan 1970 00:00:00 GMT;";
@@ -29,6 +32,9 @@ export default function AdminLoginPage() {
   // Step 1: Validate Email & Password, then request 2FA OTP
   const handleCredentialsSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmittingRef.current || loading) return;
+
+    isSubmittingRef.current = true;
     setError(null);
     setInfoMessage(null);
     setLoading(true);
@@ -50,6 +56,7 @@ export default function AdminLoginPage() {
       }
 
       setInfoMessage(data.message || `A 6-digit verification code has been sent to ${email}`);
+      setOtp("");
       setStep("otp");
     } catch (err: unknown) {
       console.error("Login step 1 error:", err);
@@ -63,27 +70,32 @@ export default function AdminLoginPage() {
       }
     } finally {
       setLoading(false);
+      isSubmittingRef.current = false;
     }
   };
 
   // Step 2: Verify 6-digit OTP and complete Admin Login
   const handleOtpSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmittingRef.current || loading) return;
+
     setError(null);
     setInfoMessage(null);
 
-    if (!otp || otp.trim().length !== 6) {
+    const cleanOtp = otp.trim();
+    if (!cleanOtp || cleanOtp.length !== 6) {
       setError("Please enter the complete 6-digit verification code.");
       return;
     }
 
+    isSubmittingRef.current = true;
     setLoading(true);
 
     try {
       const res = await fetch("/api/auth/otp/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, otp }),
+        body: JSON.stringify({ email, otp: cleanOtp }),
       });
 
       const data = await res.json();
@@ -99,12 +111,15 @@ export default function AdminLoginPage() {
       setError(msg);
     } finally {
       setLoading(false);
+      isSubmittingRef.current = false;
     }
   };
 
   // Handle Forgot Password Request
   const handleForgotPasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmittingRef.current || loading) return;
+
     setError(null);
     setInfoMessage(null);
 
@@ -113,6 +128,7 @@ export default function AdminLoginPage() {
       return;
     }
 
+    isSubmittingRef.current = true;
     setLoading(true);
 
     try {
@@ -124,11 +140,15 @@ export default function AdminLoginPage() {
       setError(authErr.message || "Failed to send password reset email. Please verify the email address.");
     } finally {
       setLoading(false);
+      isSubmittingRef.current = false;
     }
   };
 
   // Resend OTP Code
   const handleResendOtp = async () => {
+    if (isResendingRef.current || resending || loading) return;
+
+    isResendingRef.current = true;
     setError(null);
     setInfoMessage(null);
     setResending(true);
@@ -145,12 +165,14 @@ export default function AdminLoginPage() {
         throw new Error(data.error || "Failed to resend verification code.");
       }
 
+      setOtp("");
       setInfoMessage("A new 6-digit code has been dispatched to your email.");
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Failed to resend code.";
       setError(msg);
     } finally {
       setResending(false);
+      isResendingRef.current = false;
     }
   };
 

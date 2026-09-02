@@ -42,6 +42,11 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // Admin OTP Store: Used by server authentication
+    match /admin_otps/{document} {
+      allow read, write: if true;
+    }
+
     // Contact Messages collection: Public CREATE-ONLY, Admin READ/UPDATE/DELETE
     match /messages/{document} {
       allow create: if request.resource.data.name is string 
