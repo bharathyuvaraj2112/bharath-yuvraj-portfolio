@@ -40,7 +40,7 @@ const adminNavItems = [
 ];
 
 export function AdminLayout({ children }: { children: React.ReactNode }) {
-  const { logout, loading } = useAuth();
+  const { user, isAdmin, logout, loading } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
@@ -53,17 +53,23 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
     return () => unsubscribe();
   }, []);
 
+  useEffect(() => {
+    if (!loading && (!user || !isAdmin)) {
+      router.replace("/admin/login");
+    }
+  }, [user, isAdmin, loading, router]);
+
   const handleLogout = async () => {
     await logout();
     router.push("/admin/login");
   };
 
-  if (loading) {
+  if (loading || !user || !isAdmin) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <div className="w-8 h-8 rounded-full border-2 border-white border-t-transparent animate-spin" />
-          <span className="text-xs font-mono text-zinc-400">Loading Admin Dashboard...</span>
+          <span className="text-xs font-mono text-zinc-400">Verifying Admin Access...</span>
         </div>
       </div>
     );

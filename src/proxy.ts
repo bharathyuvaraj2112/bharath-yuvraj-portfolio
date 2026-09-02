@@ -26,14 +26,11 @@ export function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL(targetPath, request.url));
   }
 
-  // Direct /admin root route
+  // Direct /admin root route -> Always route to admin login portal
   if (pathname === "/admin" || pathname === "/admin/") {
-    if (!isAuthenticated) {
-      const loginUrl = new URL("/admin/login", request.url);
-      loginUrl.searchParams.set("from", "/admin/dashboard");
-      return NextResponse.redirect(loginUrl);
-    }
-    return NextResponse.redirect(new URL("/admin/dashboard", request.url));
+    const loginUrl = new URL("/admin/login", request.url);
+    loginUrl.searchParams.set("from", "/admin/dashboard");
+    return NextResponse.redirect(loginUrl);
   }
 
   // Protect all /admin routes except /admin/login
@@ -42,13 +39,6 @@ export function proxy(request: NextRequest) {
       const loginUrl = new URL("/admin/login", request.url);
       loginUrl.searchParams.set("from", pathname);
       return NextResponse.redirect(loginUrl);
-    }
-  }
-
-  // If already logged in and accessing /admin/login, redirect to dashboard
-  if (pathname === "/admin/login") {
-    if (isAuthenticated) {
-      return NextResponse.redirect(new URL("/admin/dashboard", request.url));
     }
   }
 
