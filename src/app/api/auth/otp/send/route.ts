@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { setOtp } from "@/lib/otpStore";
+import { generateOtp } from "@/lib/otpStore";
 import { sendOtpEmail } from "@/lib/nodemailer";
 
 export async function POST(req: Request) {
@@ -10,14 +10,11 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Email address is required." }, { status: 400 });
     }
 
-    // Generate 6-digit OTP
-    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
-
-    // Save in persistent server OTP store (valid for 5 minutes)
-    await setOtp(email, otpCode, 5 * 60 * 1000);
+    // Generate 6-digit OTP and HMAC signed token (valid for 5 minutes)
+    const { otp, token } = generateOtp(email, 5 * 60 * 1000);
 
     // Send email via Nodemailer
-    const emailSent = await sendOtpEmail(email, otpCode);
+    const emailSent = await sendOtpEmail(email, otp);
 
     if (!emailSent) {
       return NextResponse.json(
@@ -28,6 +25,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       success: true,
+      token,
       message: `A 6-digit security code has been sent to ${email}`,
     });
   } catch (err: unknown) {

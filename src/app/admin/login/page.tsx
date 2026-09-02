@@ -15,6 +15,7 @@ export default function AdminLoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [otp, setOtp] = useState("");
+  const [otpToken, setOtpToken] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [resending, setResending] = useState(false);
@@ -47,14 +48,24 @@ export default function AdminLoginPage() {
       const res = await fetch("/api/auth/otp/send", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email: email.trim().toLowerCase() }),
       });
 
-      const data = await res.json();
+      let data: { error?: string; token?: string; message?: string } = {};
+      try {
+        data = await res.json();
+      } catch {
+        const text = await res.text().catch(() => "");
+        throw new Error(text || `Server error (${res.status}). Failed to dispatch verification code.`);
+      }
+
       if (!res.ok || data.error) {
         throw new Error(data.error || "Failed to dispatch 2FA verification code.");
       }
 
+      if (data.token) {
+        setOtpToken(data.token);
+      }
       setInfoMessage(data.message || `A 6-digit verification code has been sent to ${email}`);
       setOtp("");
       setStep("otp");
@@ -64,7 +75,7 @@ export default function AdminLoginPage() {
       if (authErr.code === "auth/invalid-credential" || authErr.code === "auth/user-not-found" || authErr.code === "auth/wrong-password") {
         setError("Invalid email or password. Only authorized administrators can log in.");
       } else if (err instanceof TypeError && err.message.includes("fetch")) {
-        setError("Server connection re-established. Please click Continue to 2FA Verification again.");
+        setError("Server connection issue. Please check your internet and try again.");
       } else {
         setError(authErr.message || "Failed to authenticate. Please check your credentials.");
       }
@@ -95,10 +106,21 @@ export default function AdminLoginPage() {
       const res = await fetch("/api/auth/otp/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, otp: cleanOtp }),
+        body: JSON.stringify({
+          email: email.trim().toLowerCase(),
+          otp: cleanOtp,
+          token: otpToken,
+        }),
       });
 
-      const data = await res.json();
+      let data: { error?: string; message?: string } = {};
+      try {
+        data = await res.json();
+      } catch {
+        const text = await res.text().catch(() => "");
+        throw new Error(text || `Server error (${res.status}). Failed to verify code.`);
+      }
+
       if (!res.ok || data.error) {
         throw new Error(data.error || "Invalid or expired verification code.");
       }
@@ -132,7 +154,7 @@ export default function AdminLoginPage() {
     setLoading(true);
 
     try {
-      await sendAdminPasswordReset(email);
+      await sendAdminPasswordReset(email.trim().toLowerCase());
       setInfoMessage(`A password reset link has been dispatched to ${email}. Check your inbox.`);
     } catch (err: unknown) {
       console.error("Forgot password error:", err);
@@ -157,14 +179,24 @@ export default function AdminLoginPage() {
       const res = await fetch("/api/auth/otp/send", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email: email.trim().toLowerCase() }),
       });
 
-      const data = await res.json();
+      let data: { error?: string; token?: string; message?: string } = {};
+      try {
+        data = await res.json();
+      } catch {
+        const text = await res.text().catch(() => "");
+        throw new Error(text || `Server error (${res.status}). Failed to resend code.`);
+      }
+
       if (!res.ok || data.error) {
         throw new Error(data.error || "Failed to resend verification code.");
       }
 
+      if (data.token) {
+        setOtpToken(data.token);
+      }
       setOtp("");
       setInfoMessage("A new 6-digit code has been dispatched to your email.");
     } catch (err: unknown) {

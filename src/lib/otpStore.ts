@@ -1,6 +1,4 @@
-import { adminDb } from "./firebase/admin";
-import { db } from "./firebase/config";
-import { doc, getDoc, setDoc, deleteDoc } from "firebase/firestore";
+import crypto from "crypto";
 
 interface OtpEntry {
   otp: string;
@@ -17,121 +15,92 @@ if (!globalOtpStore._otpMap) {
 
 export const otpStore = globalOtpStore._otpMap;
 
-const OTP_COLLECTION = "admin_otps";
+const OTP_SECRET = process.env.OTP_SECRET || process.env.SMTP_PASS || "portfolio_secure_admin_2fa_otp_key_2025";
 
-export async function setOtp(email: string, otp: string, ttlMs: number = 300000): Promise<void> {
-  const normalized = email.toLowerCase().trim();
-  const entry: OtpEntry = {
-    otp: otp.trim(),
-    expiresAt: Date.now() + ttlMs,
-  };
-
-  // 1. Save in local in-memory store
-  otpStore.set(normalized, entry);
-
-  // 2. Persist in Firestore for reliable cross-instance / serverless verification
-  try {
-    if (adminDb) {
-      await adminDb.collection(OTP_COLLECTION).doc(normalized).set({
-        email: normalized,
-        otp: entry.otp,
-        expiresAt: entry.expiresAt,
-        createdAt: Date.now(),
-      });
-      return;
-    }
-  } catch (adminErr) {
-    console.warn("Firestore Admin setOtp warning, attempting client firestore fallback:", adminErr);
-  }
-
-  try {
-    const docRef = doc(db, OTP_COLLECTION, normalized);
-    await setDoc(docRef, {
-      email: normalized,
-      otp: entry.otp,
-      expiresAt: entry.expiresAt,
-      createdAt: Date.now(),
-    });
-  } catch (clientErr) {
-    console.warn("Firestore Client setOtp fallback warning:", clientErr);
-  }
+export interface GeneratedOtp {
+  otp: string;
+  token: string;
+  expiresAt: number;
 }
 
-export async function verifyOtp(email: string, otp: string): Promise<{ valid: boolean; error?: string }> {
+/**
+ * Generates a 6-digit OTP code and a cryptographically signed HMAC verification token.
+ * This is 100% stateless and reliable across all serverless instances on Vercel without database latency.
+ */
+export function generateOtp(email: string, ttlMs: number = 5 * 60 * 1000): GeneratedOtp {
   const normalized = email.toLowerCase().trim();
-  const inputOtp = otp.trim();
-  let entry: OtpEntry | undefined;
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+  const expiresAt = Date.now() + ttlMs;
 
-  // 1. Try reading from Firestore Admin
-  try {
-    if (adminDb) {
-      const snap = await adminDb.collection(OTP_COLLECTION).doc(normalized).get();
-      if (snap.exists) {
-        const data = snap.data() as { otp: string; expiresAt: number };
-        if (data?.otp) {
-          entry = { otp: String(data.otp).trim(), expiresAt: Number(data.expiresAt) };
-        }
-      }
+  const dataToSign = `${normalized}:${otp}:${expiresAt}`;
+  const hash = crypto.createHmac("sha256", OTP_SECRET).update(dataToSign).digest("hex");
+  const token = `${expiresAt}.${hash}`;
+
+  // Keep in memory map as fallback
+  otpStore.set(normalized, { otp, expiresAt });
+
+  return { otp, token, expiresAt };
+}
+
+/**
+ * Backward-compatible helper to store an OTP in memory.
+ */
+export function setOtp(email: string, otp: string, ttlMs: number = 5 * 60 * 1000): void {
+  const normalized = email.toLowerCase().trim();
+  otpStore.set(normalized, {
+    otp: otp.trim(),
+    expiresAt: Date.now() + ttlMs,
+  });
+}
+
+/**
+ * Verifies the 6-digit OTP code.
+ * If token is provided, uses instant cryptographic HMAC verification (stateless).
+ * Otherwise falls back to memory store verification.
+ */
+export function verifyOtp(
+  email: string,
+  otp: string,
+  token?: string
+): { valid: boolean; error?: string } {
+  const normalized = email.toLowerCase().trim();
+  const cleanOtp = otp.trim();
+
+  // 1. Primary: Cryptographic HMAC Token Verification (Stateless & instant across any serverless instance)
+  if (token && typeof token === "string" && token.includes(".")) {
+    const [expiresAtStr, hash] = token.split(".");
+    const expiresAt = parseInt(expiresAtStr, 10);
+
+    if (isNaN(expiresAt) || Date.now() > expiresAt) {
+      return { valid: false, error: "Verification code has expired. Please request a new code." };
     }
-  } catch (adminErr) {
-    console.warn("Firestore Admin verifyOtp warning:", adminErr);
-  }
 
-  // 2. Fallback to Firestore client SDK if not found via Admin
-  if (!entry) {
-    try {
-      const docRef = doc(db, OTP_COLLECTION, normalized);
-      const snap = await getDoc(docRef);
-      if (snap.exists()) {
-        const data = snap.data() as { otp: string; expiresAt: number };
-        if (data?.otp) {
-          entry = { otp: String(data.otp).trim(), expiresAt: Number(data.expiresAt) };
-        }
-      }
-    } catch (clientErr) {
-      console.warn("Firestore Client verifyOtp warning:", clientErr);
+    const expectedData = `${normalized}:${cleanOtp}:${expiresAt}`;
+    const expectedHash = crypto.createHmac("sha256", OTP_SECRET).update(expectedData).digest("hex");
+
+    if (hash === expectedHash) {
+      otpStore.delete(normalized);
+      return { valid: true };
     }
+
+    return { valid: false, error: "Incorrect 6-digit verification code. Please check your email." };
   }
 
-  // 3. Fallback to in-memory map
-  if (!entry) {
-    entry = otpStore.get(normalized);
-  }
-
+  // 2. Secondary fallback: In-memory store
+  const entry = otpStore.get(normalized);
   if (!entry) {
     return { valid: false, error: "No active verification code found. Please request a new code." };
   }
 
   if (Date.now() > entry.expiresAt) {
-    await deleteStoredOtp(normalized);
+    otpStore.delete(normalized);
     return { valid: false, error: "Verification code has expired. Please request a new code." };
   }
 
-  if (entry.otp !== inputOtp) {
+  if (entry.otp !== cleanOtp) {
     return { valid: false, error: "Incorrect 6-digit verification code. Please check your email." };
   }
 
-  // Verification succeeded - clear OTP to prevent reuse
-  await deleteStoredOtp(normalized);
+  otpStore.delete(normalized);
   return { valid: true };
-}
-
-async function deleteStoredOtp(normalizedEmail: string): Promise<void> {
-  otpStore.delete(normalizedEmail);
-
-  try {
-    if (adminDb) {
-      await adminDb.collection(OTP_COLLECTION).doc(normalizedEmail).delete();
-      return;
-    }
-  } catch (adminErr) {
-    console.warn("Firestore Admin deleteStoredOtp warning:", adminErr);
-  }
-
-  try {
-    const docRef = doc(db, OTP_COLLECTION, normalizedEmail);
-    await deleteDoc(docRef);
-  } catch (clientErr) {
-    console.warn("Firestore Client deleteStoredOtp warning:", clientErr);
-  }
 }
