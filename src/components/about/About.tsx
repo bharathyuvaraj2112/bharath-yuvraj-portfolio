@@ -35,7 +35,7 @@ export function About() {
           subtitle="A passionate student explorer working at the intersection of AI modeling and modern web development."
         />
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-stretch">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 items-stretch">
           
           {/* Left Column: Narrative Cards */}
           <motion.div
@@ -43,7 +43,7 @@ export function About() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="lg:col-span-6 flex flex-col gap-6"
+            className="md:col-span-6 flex flex-col gap-6"
           >
             {/* Introduction Card */}
             <div className="glass-card rounded-2xl p-6 sm:p-8 border border-zinc-200 dark:border-zinc-800">
@@ -97,7 +97,7 @@ export function About() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="lg:col-span-6 grid grid-cols-1 sm:grid-cols-2 gap-6"
+            className="md:col-span-6 grid grid-cols-1 sm:grid-cols-2 gap-6"
           >
             {profile.infoCards?.map((card, idx) => (
               <div

@@ -24,7 +24,7 @@ export function ProfileVisual() {
       : "/profile.jpg";
 
   return (
-    <div className="relative w-full max-w-md mx-auto aspect-square flex items-center justify-center p-4">
+    <div className="relative w-full max-w-sm sm:max-w-md mx-auto aspect-square flex items-center justify-center p-2 sm:p-4">
       {/* Background Metallic Radial Glow */}
       <div className="absolute inset-0 bg-linear-to-tr from-zinc-700/20 via-zinc-500/10 to-zinc-800/30 rounded-full blur-3xl -z-10" />
 
@@ -46,10 +46,10 @@ export function ProfileVisual() {
           <div className="absolute inset-0 bg-linear-to-t from-zinc-950 via-zinc-950/20 to-transparent opacity-80" />
 
           {/* Bottom Overlay Label */}
-          <div className="absolute bottom-4 left-4 right-4 z-10 flex items-center justify-between p-3 rounded-xl bg-zinc-950/85 backdrop-blur-md border border-zinc-800">
+          <div className="absolute bottom-3 sm:bottom-4 left-3 sm:left-4 right-3 sm:right-4 z-10 flex items-center justify-between p-2.5 sm:p-3 rounded-xl bg-zinc-950/85 backdrop-blur-md border border-zinc-800">
             <div className="flex items-center gap-2">
-              <div className="p-2 rounded-lg bg-white text-black">
-                <Terminal className="w-4 h-4" />
+              <div className="p-1.5 sm:p-2 rounded-lg bg-white text-black">
+                <Terminal className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </div>
               <div>
                 <h4 className="text-xs font-bold text-white leading-tight">
@@ -72,9 +72,9 @@ export function ProfileVisual() {
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.3 }}
-          className="absolute top-6 right-6 z-20 hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-zinc-900/90 text-white text-xs font-mono border border-zinc-700 shadow-xl backdrop-blur-md"
+          className="absolute top-4 sm:top-6 right-4 sm:right-6 z-20 flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full bg-zinc-900/90 text-white text-[10px] sm:text-xs font-mono border border-zinc-700 shadow-xl backdrop-blur-md"
         >
-          <Brain className="w-3.5 h-3.5 text-zinc-300" />
+          <Brain className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-zinc-300" />
           <span>Machine Learning</span>
         </motion.div>
 
@@ -82,9 +82,9 @@ export function ProfileVisual() {
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.4 }}
-          className="absolute top-6 left-6 z-20 hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-zinc-900/90 text-white text-xs font-mono border border-zinc-700 shadow-xl backdrop-blur-md"
+          className="absolute top-4 sm:top-6 left-4 sm:left-6 z-20 flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full bg-zinc-900/90 text-white text-[10px] sm:text-xs font-mono border border-zinc-700 shadow-xl backdrop-blur-md"
         >
-          <Code2 className="w-3.5 h-3.5 text-zinc-300" />
+          <Code2 className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-zinc-300" />
           <span>Full Stack</span>
         </motion.div>
 

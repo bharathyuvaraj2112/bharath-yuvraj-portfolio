@@ -62,7 +62,7 @@ export function Contact() {
           subtitle="Have a project in mind, an opportunity, or just want to chat about AI & Web Dev? Drop a message below."
         />
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12 items-start">
           
           {/* Left Column: Contact Cards */}
           <motion.div
@@ -70,7 +70,7 @@ export function Contact() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="lg:col-span-5 flex flex-col gap-6"
+            className="md:col-span-5 flex flex-col gap-6"
           >
             {/* Direct Email Card */}
             <div className="glass-card rounded-3xl p-6 sm:p-8 flex items-start gap-4 border border-zinc-800">
@@ -138,7 +138,7 @@ export function Contact() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="lg:col-span-7 glass-card rounded-3xl p-6 sm:p-10 border border-zinc-800"
+            className="md:col-span-7 glass-card rounded-3xl p-6 sm:p-10 border border-zinc-800"
           >
             {submitted ? (
               <div className="text-center py-12 px-4 space-y-4">

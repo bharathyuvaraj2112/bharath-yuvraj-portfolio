@@ -93,7 +93,7 @@ export function Navbar() {
           </a>
 
           {/* Desktop Nav Links */}
-          <nav className="hidden lg:flex items-center gap-1 bg-zinc-900/80 px-3 py-1.5 rounded-full border border-zinc-800/80 backdrop-blur-md">
+          <nav className="hidden md:flex items-center gap-0.5 lg:gap-1 bg-zinc-900/80 px-2 lg:px-3 py-1.5 rounded-full border border-zinc-800/80 backdrop-blur-md">
             {navItems.map((item) => {
               const id = item.href.substring(1);
               const isActive = activeSection === id;
@@ -105,7 +105,7 @@ export function Navbar() {
                     e.preventDefault();
                     handleNavClick(item.href);
                   }}
-                  className={`relative px-3 py-1.5 text-xs font-medium rounded-full transition-all duration-200 ${
+                  className={`relative px-2 lg:px-3 py-1 lg:py-1.5 text-[11px] lg:text-xs font-medium rounded-full transition-all duration-200 ${
                     isActive
                       ? "text-white font-bold"
                       : "text-zinc-400 hover:text-zinc-100"
@@ -125,7 +125,7 @@ export function Navbar() {
           </nav>
 
           {/* Desktop Actions */}
-          <div className="hidden sm:flex items-center gap-2.5">
+          <div className="hidden md:flex items-center gap-2 lg:gap-2.5">
             <SemanticSearchModal />
             <ResumeAnalyzerModal />
             {resumeHref ? (
@@ -133,7 +133,7 @@ export function Navbar() {
                 href={resumeHref}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-full bg-white text-black hover:bg-zinc-200 transition-all duration-200 shadow-sm focus:outline-none"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-full bg-white text-black hover:bg-zinc-200 transition-all duration-200 shadow-sm focus:outline-none"
               >
                 <FileText className="w-3.5 h-3.5" />
                 <span>Resume</span>
@@ -142,7 +142,7 @@ export function Navbar() {
           </div>
 
           {/* Mobile Menu Toggle Button */}
-          <div className="flex sm:hidden items-center gap-2">
+          <div className="flex md:hidden items-center gap-2">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="p-2 rounded-xl border border-zinc-800 bg-zinc-900 text-zinc-100 hover:border-zinc-500 focus:outline-none"
@@ -161,7 +161,7 @@ export function Navbar() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="sm:hidden border-b border-zinc-800 bg-black/95 backdrop-blur-xl px-4 pt-3 pb-6 mt-3"
+            className="md:hidden border-b border-zinc-800 bg-black/95 backdrop-blur-xl px-4 pt-3 pb-6 mt-3"
           >
             <div className="flex flex-col gap-2">
               <div className="flex flex-wrap gap-2 pb-2 mb-2 border-b border-zinc-800">

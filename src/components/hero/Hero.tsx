@@ -41,14 +41,14 @@ export function Hero() {
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-137.5 h-137.5 bg-zinc-800/15 rounded-full blur-[140px] pointer-events-none -z-10" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-6 lg:gap-8 items-center">
           
           {/* Left Column: Headline & Info */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="lg:col-span-7 flex flex-col items-start"
+            className="md:col-span-7 flex flex-col items-start"
           >
             {/* Availability Status Badge */}
             <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-zinc-900 text-zinc-100 border border-zinc-700 text-xs font-mono font-medium mb-6 shadow-sm">
@@ -60,12 +60,12 @@ export function Hero() {
             </div>
 
             {/* Main Headline */}
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.15] mb-6">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.15] mb-6">
               {profile.tagline || profile.title || "AI & Machine Learning Student | Full Stack Developer"}
             </h1>
 
             {/* Supporting Bio Text */}
-            <p className="text-lg sm:text-xl text-zinc-300 max-w-2xl leading-relaxed mb-8">
+            <p className="text-base sm:text-lg md:text-xl text-zinc-300 max-w-2xl leading-relaxed mb-8">
               Hi, I&apos;m <span className="font-bold text-white">{profile.name}</span>. {profile.shortBio || profile.bio}
             </p>
 
@@ -140,7 +140,7 @@ export function Hero() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="lg:col-span-5 flex justify-center"
+            className="md:col-span-5 flex justify-center w-full"
           >
             <ProfileVisual />
           </motion.div>
