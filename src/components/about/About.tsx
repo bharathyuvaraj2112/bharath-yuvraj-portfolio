@@ -26,7 +26,7 @@ export function About() {
   }, []);
 
   return (
-    <section id="about" className="py-24 relative bg-zinc-50/50 dark:bg-zinc-950/40">
+    <section id="about" className="py-12 sm:py-16 lg:py-20 relative bg-zinc-50/50 dark:bg-zinc-950/40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <SectionHeading

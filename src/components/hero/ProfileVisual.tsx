@@ -3,8 +3,7 @@
 import { useState, useEffect } from "react";
 import { profileData as defaultProfile, ProfileData } from "@/data/profile";
 import { getProfileFromFirestore } from "@/lib/firebase/profile";
-import { motion } from "framer-motion";
-import { Sparkles, Terminal, Code2, Brain } from "lucide-react";
+import { Sparkles, Terminal } from "lucide-react";
 import Image from "next/image";
 
 export function ProfileVisual() {
@@ -38,12 +37,12 @@ export function ProfileVisual() {
             alt={profile.name}
             fill
             sizes="(max-width: 768px) 100vw, 400px"
-            className="object-cover object-center group-hover:scale-105 transition-transform duration-500 filter brightness-95 contrast-105"
+            className="object-cover object-center group-hover:scale-105 transition-transform duration-500 filter brightness-100 contrast-100"
             priority
           />
 
-          {/* Grayscale Ambient Gradient Overlay */}
-          <div className="absolute inset-0 bg-linear-to-t from-zinc-950 via-zinc-950/20 to-transparent opacity-80" />
+          {/* Subtle Bottom Ambient Gradient Overlay for Text Legibility */}
+          <div className="absolute inset-0 bg-linear-to-t from-zinc-950/80 via-zinc-950/20 to-transparent opacity-60 pointer-events-none" />
 
           {/* Bottom Overlay Label */}
           <div className="absolute bottom-3 sm:bottom-4 left-3 sm:left-4 right-3 sm:right-4 z-10 flex items-center justify-between p-2.5 sm:p-3 rounded-xl bg-zinc-950/85 backdrop-blur-md border border-zinc-800">
@@ -66,27 +65,6 @@ export function ProfileVisual() {
             </div>
           </div>
         </div>
-
-        {/* Floating Accent Pills */}
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.3 }}
-          className="absolute top-4 sm:top-6 right-4 sm:right-6 z-20 flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full bg-zinc-900/90 text-white text-[10px] sm:text-xs font-mono border border-zinc-700 shadow-xl backdrop-blur-md"
-        >
-          <Brain className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-zinc-300" />
-          <span>Machine Learning</span>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.4 }}
-          className="absolute top-4 sm:top-6 left-4 sm:left-6 z-20 flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full bg-zinc-900/90 text-white text-[10px] sm:text-xs font-mono border border-zinc-700 shadow-xl backdrop-blur-md"
-        >
-          <Code2 className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-zinc-300" />
-          <span>Full Stack</span>
-        </motion.div>
 
       </div>
     </div>
