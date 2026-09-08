@@ -4,6 +4,7 @@ import { Project } from "@/data/projects";
 import { GithubIcon } from "@/components/ui/SocialIcons";
 import { ExternalLink, Info, Cpu, BookOpen, FileCheck, Code2 } from "lucide-react";
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 interface ProjectCardProps {
   project: Project;
@@ -36,13 +37,24 @@ export function ProjectCard({ project, onSelect }: ProjectCardProps) {
       <div>
         {/* Banner Visual Header - Monochrome Grayscale Gradient */}
         <div className="relative h-48 w-full bg-linear-to-br from-zinc-900 via-zinc-950 to-black flex items-center justify-center overflow-hidden">
-          {/* Subtle Grid Overlay */}
-          <div className="absolute inset-0 bg-tech-grid opacity-30" />
+          {project.prototypeImageUrl ? (
+            <Image
+              src={project.prototypeImageUrl}
+              alt={project.title}
+              fill
+              className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
+            />
+          ) : (
+            <>
+              {/* Subtle Grid Overlay */}
+              <div className="absolute inset-0 bg-tech-grid opacity-30" />
 
-          {/* Icon Preview */}
-          <div className="z-10 group-hover:scale-110 transition-transform duration-300 p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-xl">
-            {getBannerIcon()}
-          </div>
+              {/* Icon Preview */}
+              <div className="z-10 group-hover:scale-110 transition-transform duration-300 p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-xl">
+                {getBannerIcon()}
+              </div>
+            </>
+          )}
 
           {/* Status Badge */}
           <div className="absolute top-4 left-4 z-10">

@@ -153,7 +153,7 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
 
           {/* Modal Footer Actions */}
           <div className="p-6 border-t border-zinc-800 bg-zinc-900/60 flex flex-wrap items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-3">
               {project.githubUrl && (
                 <a
                   href={project.githubUrl}
@@ -175,6 +175,18 @@ export function ProjectModal({ project, onClose }: ProjectModalProps) {
                 >
                   <ExternalLink className="w-4 h-4" />
                   <span>Live Project</span>
+                </a>
+              )}
+
+              {project.prototypeUrl && (
+                <a
+                  href={project.prototypeUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 text-xs font-semibold shadow-sm hover:bg-indigo-600/30 transition-all"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  <span>View Prototype</span>
                 </a>
               )}
             </div>
