@@ -25,6 +25,8 @@ export default function NewProjectPage() {
     technologies: "Next.js, React, TypeScript",
     githubUrl: "",
     liveUrl: "",
+    prototypeUrl: "",
+    prototypeImageUrl: "",
     featured: true,
     imageVisualType: "portfolio" as const,
     overview: "",
@@ -238,6 +240,28 @@ export default function NewProjectPage() {
                 onChange={(e) => setFormData({ ...formData, liveUrl: e.target.value })}
                 placeholder="https://my-demo-app.com"
                 className="w-full px-4 py-3 rounded-2xl bg-zinc-900 border border-zinc-800 text-white text-sm focus:outline-none focus:ring-2 focus:ring-zinc-600 font-mono"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-xs font-mono font-semibold text-zinc-300 mb-2">Prototype URL</label>
+              <input
+                type="url"
+                value={formData.prototypeUrl}
+                onChange={(e) => setFormData({ ...formData, prototypeUrl: e.target.value })}
+                placeholder="https://figma.com/..."
+                className="w-full px-4 py-3 rounded-2xl bg-zinc-900 border border-zinc-800 text-white text-sm focus:outline-none focus:ring-2 focus:ring-zinc-600 font-mono"
+              />
+            </div>
+
+            <div>
+              <ImageUploader
+                value={formData.prototypeImageUrl}
+                onChange={(url) => setFormData({ ...formData, prototypeImageUrl: url })}
+                folder="projects"
+                label="Prototype Image / File"
               />
             </div>
           </div>

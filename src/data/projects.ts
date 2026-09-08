@@ -10,6 +10,8 @@ export interface Project {
   technologies: string[];
   githubUrl: string;
   liveUrl?: string;
+  prototypeUrl?: string;
+  prototypeImageUrl?: string;
   featured: boolean;
   imageVisualType: "accident" | "study" | "resume" | "portfolio";
   overview: string;
